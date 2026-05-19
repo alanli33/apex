@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APEX 国际基层医疗机构认证 | GBA-FM-ARC官方网站</title>
+    <style>
+        /* 全局样式与变量 */
+        :root {
+            --primary-blue: #0f4c81;     /* 医疗深蓝 */
+            --accent-gold: #d4af37;       /* 品质金 */
+            --bg-light: #f8fafc;          /* 浅灰色背景 */
+            --bg-white: #ffffff;          /* 白色背景 */
+            --text-main: #2d3748;         /* 主文本色 */
+            --text-muted: #718096;        /* 次要文本色 */
+            --border-color: #e2e8f0;      /* 边框色 */
+            --success-color: #38a169;     /* 成功绿 */
+            --danger-color: #e53e3e;      /* 警告红 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft YaHei", sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-light);
+            line-height: 1.7;
+        }
+
+        /* 顶部导航 */
+        header {
+            background-color: var(--bg-white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Banner 首屏区域 */
+        .hero-section {
+            background: linear-gradient(135deg, #0f4c81 0%, #1e3a8a 100%);
+            color: var(--bg-white);
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-section h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .hero-section p {
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-gold);
+            color: var(--bg-white);
+            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: #c5a028;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            border: 2px solid var(--bg-white);
+            color: var(--bg-white);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-white);
+            color: var(--primary-blue);
+        }
+
+        /* 主体内容布局 */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        section {
+            margin-bottom: 5rem;
+            scroll-margin-top: 5rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--primary-blue);
+            margin-bottom: 2.5rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent-gold);
+            border-radius: 2px;
+        }
+
+        /* 栏目一：简介卡片网格 */
+        .intro-container {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .intro-background {
+            background-color: #f0f4f8;
+            border-left: 5px solid var(--primary-blue);
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .intro-background h3 {
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .intro-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .intro-card {
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            padding: 1.8rem;
+            border-top: 4px solid var(--primary-blue);
+        }
+
+        .intro-card h3 {
+            color: var(--primary-blue);
+            font-size: 1.15rem;
+            margin-bottom: 1rem;
+        }
+
+        .intro-card ul {
+            list-style-position: inside;
+        }
+
+        .intro-card li {
+            margin-bottom: 0.6rem;
+            color: var(--text-main);
+        }
+
+        /* 栏目二：30个维度网格 */
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .dimension-card {
+            background-color: var(--bg-white);
+            border-radius: 8px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+        }
+
+        /* 为6个卡片配置不同颜色线 */
+        .dim-color-1 { border-top: 5px solid #0f4c81; } 
+        .dim-color-2 { border-top: 5px solid #0d9488; } 
+        .dim-color-3 { border-top: 5px solid #d97706; } 
+        .dim-color-4 { border-top: 5px solid #e11d48; } 
+        .dim-color-5 { border-top: 5px solid #7c3aed; } 
+        .dim-color-6 { border-top: 5px solid #4f46e5; } 
+
+        .dimension-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 8px;
+        }
+        .dim-color-1 h3 { color: #0f4c81; }
+        .dim-color-2 h3 { color: #0d9488; }
+        .dim-color-3 h3 { color: #d97706; }
+        .dim-color-4 h3 { color: #e11d48; }
+        .dim-color-5 h3 { color: #7c3aed; }
+        .dim-color-6 h3 { color: #4f46e5; }
+
+        .dimension-list {
+            list-style: none;
+        }
+
+        .dimension-list li {
+            position: relative;
+            padding-left: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .dimension-list li::before {
+            content: "•";
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 1.2rem;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        /* 表格样式 */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            background-color: var(--bg-white);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .score-badge {
+            background-color: var(--primary-blue);
+            color: var(--bg-white);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .lang-en {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* 评审结果与等级升级 */
+        .level-upgrade-box {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+        }
+
+        .upgrade-section {
+            margin-top: 3rem;
+            background-color: #fefaf0;
+            border: 1px dashed rgba(212, 175, 55, 0.4);
+            border-radius: 8px;
+            padding: 2rem;
+        }
+
+        .upgrade-section h3 {
+            color: #b45309;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .upgrade-section p {
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            text-align: justify;
+        }
+
+        /* 环形连贯处理链 */
+        .circle-process-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            position: relative;
+        }
+
+        .process-circle-item {
+            flex: 1;
+            min-width: 140px;
+            text-align: center;
+            position: relative;
+            background-color: var(--bg-white);
+            padding: 1.5rem 0.8rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+        }
+
+        @media (min-width: 993px) {
+            .process-circle-item:not(:last-child)::after {
+                content: "➔";
+                position: absolute;
+                right: -12px;
+                top: 38px;
+                color: rgba(15, 76, 129, 0.3);
+                font-size: 1.2rem;
+                z-index: 2;
+            }
+        }
+
+        .circle-num {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background-color: var(--bg-light);
+            border: 3px solid var(--primary-blue);
+            color: var(--primary-blue);
+            font-weight: 700;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 0 0 4px rgba(15, 76, 129, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .process-circle-item:hover .circle-num {
+            background-color: var(--primary-blue);
+            color: var(--bg-white);
+            transform: scale(1.05);
+            box-shadow: 0 0 0 6px rgba(15, 76, 129, 0.15);
+        }
+
+        .circle-title {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .circle-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            text-align: justify;
+        }
+
+        /* 认证收费 */
+        .fee-box {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        .fee-price {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin: 0.8rem 0;
+        }
+
+        .fee-price span {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        /* 资料下载中心 */
+        .download-panel {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .download-links-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn-file {
+            background-color: #f1f5f9;
+            color: var(--primary-blue);
+            padding: 0.8rem 2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            max-width: 650px;
+            justify-content: center;
+        }
+
+        .btn-file:hover {
+            background-color: #e2e8f0;
+        }
+
+        .online-portal {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2.5rem;
+        }
+
+        .btn-large {
+            padding: 1rem 3.5rem;
+            font-size: 1.15rem;
+            border-radius: 50px;
+        }
+
+        /* 状态标识 */
+        .status-dot {
+            color: var(--success-color);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-dot::before {
+            content: "●";
+            font-size: 0.8rem;
+        }
+
+        /* 页脚 */
+        footer {
+            background-color: var(--primary-blue);
+            color: var(--bg-white);
+            text-align: center;
+            padding: 2.5rem 2rem;
+        }
+
+        footer h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 992px) {
+            .circle-process-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 2rem;
+            }
+            .process-circle-item {
+                width: 100%;
+                max-width: 450px;
+                padding: 1.5rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo">GBA-FM-ARC | APEX 认证体系</a>
+            <ul class="nav-links">
+                <li><a href="#intro">标准简介</a></li>
+                <li><a href="#dimensions">评分维度</a></li>
+                <li><a href="#rubric">评分准则</a></li>
+                <li><a href="#levels">级别与升级</a></li>
+                <li><a href="#process">认证流程</a></li>
+                <li><a href="#fees">认证收费</a></li>
+                <li><a href="#registry">获证名录</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-container">
+            <h1>引领湾区家庭医学新标杆</h1>
+            <p>APEX (International Accreditation for Primary Care Excellence) 是国际化的基层医疗与家庭医学认证标准。标准聚焦粤港澳大湾区，兼顾跨境服务与国际化需求，致力于为您打造卓越的服务品牌。</p>
+            <div class="btn-group">
+                <a href="apply.html" class="btn btn-primary">在线申请认证</a>
+                <a href="#download" class="btn btn-outline">下载资料文件</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="main-container">
+
+        <section id="intro">
+            <h2 class="section-title">APEX 国际基层医疗机构认证标准简介</h2>
+            <div class="intro-container">
+                <div class="intro-background">
+                    <h3>认证背景</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-main); text-align: justify;">为服务国家医改与医疗一体化战略，推动粤港澳大湾区医疗产业协同发展。针对跨境医疗在资源调配、服务标准、数据互通及商保支付等方面的痛点，GBA-FM-ARC 推出统一的认证体系，旨在破解基层品质提升痛点，承接金融健康险产品的协同需求，并满足国际人士和港澳台同胞对于高品质家庭医学服务的迫切渴望，为基层医疗服务质量提供国际背书。</p>
+                </div>
+                
+                <div class="intro-background" style="background-color: var(--bg-light); border-left-color: var(--accent-gold); margin-bottom: 2rem;">
+                    <h3>什么是 APEX 认证？</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-main); text-align: justify;">APEX（International Accreditation for Primary Care Excellence）是深圳市粤港澳大湾区联合家庭医学评审评价研究中心（GBA-FM-ARC）正式推出的国际化基层医疗/家庭医学认证标准。标准聚焦粤港澳大湾区，兼顾跨境服务与国际化需求，旨在建立国际化共识性框架，为医疗机构的建设、运营与评估提供全面指导。</p>
+                </div>
+
+                <div class="intro-grid">
+                    <div class="intro-card">
+                        <h3>核心目标</h3>
+                        <ul>
+                            <li><strong>短期目标：</strong>规范服务流程，保障安全与一致性。</li>
+                            <li><strong>中期目标：</strong>优化效率与体验，促进跨境协作。</li>
+                            <li><strong>长期目标：</strong>建立国际化家庭医学品牌，推动可复制模式。</li>
+                        </ul>
+                    </div>
+                    <div class="intro-card">
+                        <h3>适用对象</h3>
+                        <ul>
+                            <li>公立或民营医院家庭医学科 / 全科部门。</li>
+                            <li>社区卫生服务中心/站、乡镇卫生院。</li>
+                            <li>家庭医生/全科诊所（含合资、独资）。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dimensions">
+            <h2 class="section-title">30个评分维度全览</h2>
+            <div class="dimension-grid">
+                
+                <div class="dimension-card dim-color-1">
+                    <h3>（一）机构资质与管理</h3>
+                    <ul class="dimension-list">
+                        <li>1.1 基本资质</li>
+                        <li>1.2 组织架构</li>
+                        <li>1.3 功能区设置</li>
+                        <li>1.4 SOP体系</li>
+                    </ul>
+                </div>
+
+                <div class="dimension-card dim-color-2">
+                    <h3>（二）人员资质与能力</h3>
+                    <ul class="dimension-list">
+                        <li>2.1 医生资质</li>
+                        <li>2.2 护士资质</li>
+                        <li>2.3 辅助人员资质</li>
+                        <li>2.4 语言与文化能力</li>
+                        <li>2.5 培训与发展体系</li>
+                        <li>2.6 团队配置</li>
+                        <li>2.7 医生临床服务能力</li>
+                        <li>2.8 护士临床服务能力</li>
+                        <li>2.9 员工保障与支持措施</li>
+                    </ul>
+                </div>
+
+                <div class="dimension-card dim-color-3">
+                    <h3>（三）服务内容与流程</h3>
+                    <ul class="dimension-list">
+                        <li>3.1 核心服务</li>
+                        <li>3.2 线下服务流程</li>
+                        <li>3.3 线上服务流程（如适用）</li>
+                        <li>3.4 本地转诊网络</li>
+                        <li>3.5 支付方式</li>
+                        <li>3.6 跨境转诊协调</li>
+                    </ul>
+                </div>
+
+                <div class="dimension-card dim-color-4">
+                    <h3>（四）患者安全与隐私</h3>
+                    <ul class="dimension-list">
+                        <li>4.1 患者身份识别</li>
+                        <li>4.2 用药安全流程</li>
+                        <li>4.3 感染控制</li>
+                        <li>4.4 隐私保护</li>
+                        <li>4.5 知情同意与共同决策</li>
+                    </ul>
+                </div>
+
+                <div class="dimension-card dim-color-5">
+                    <h3>（五）数据与信息安全</h3>
+                    <ul class="dimension-list">
+                        <li>5.1 信息安全技术</li>
+                        <li>5.2 数据跨境合规（如适用）</li>
+                        <li>5.3 人工智能工具管理（如适用）</li>
+                    </ul>
+                </div>
+
+                <div class="dimension-card dim-color-6">
+                    <h3>（六）质量控制与改进</h3>
+                    <ul class="dimension-list">
+                        <li>6.1 内部质控活动</li>
+                        <li>6.2 患者反馈与投诉管理</li>
+                        <li>6.3 质量改进案例</li>
+                    </ul>
+                </div>
+
+            </div>
+            <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem; text-align: center;">*注：部分评审维度或不适用于某些机构，申请方应在申请阶段与 FMARC 确认不适用项目。</p>
+        </section>
+
+        <section id="rubric">
+            <h2 class="section-title">APEX 评分准则 (0 - 5分制)</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 90px; text-align: center;">分值</th>
+                            <th style="width: 180px;">评定等次</th>
+                            <th>具体衡量准则描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">5</span></td>
+                            <td><strong>优秀</strong><span class="lang-en">Excellent</span></td>
+                            <td>完全符合或超出APEX标准要求。有完整、系统的证据支持，执行一致且有效。<span class="lang-en">Fully meets or exceeds APEX standard requirements. Supported by complete and systematic evidence, with consistent and effective execution.</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">4</span></td>
+                            <td><strong>合格</strong><span class="lang-en">Pass</span></td>
+                            <td>基本符合标准要求，仅有个别次要方面有待完善。证据充分，执行有效。<span class="lang-en">Substantially meets standard requirements, with only minor areas needing refinement. Evidence is sufficient, and execution is effective.</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">3</span></td>
+                            <td><strong>边缘合格</strong><span class="lang-en">Borderline Pass</span></td>
+                            <td>达到标准的基本要求，但存在一些需要改进的方面。有基本证据支持。<span class="lang-en">Meets the basic requirements of the standard but has some areas for improvement. Supported by fundamental evidence.</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">2</span></td>
+                            <td><strong>边缘不合格</strong><span class="lang-en">Borderline Fail</span></td>
+                            <td>部分符合标准，但存在明显缺陷或系统性不足。证据不完整或执行不一致。<span class="lang-en">Partially meets the standard but exhibits noticeable shortcomings or systemic weaknesses. Evidence is incomplete or execution is inconsistent.</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">1</span></td>
+                            <td><strong>不合格</strong><span class="lang-en">Fail</span></td>
+                            <td>与标准要求有较大差距，仅具备雏形或计划。缺乏有效执行证据。<span class="lang-en">Shows significant gaps compared to standard requirements, only in preliminary or planning stages. Lacks evidence of effective execution.</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">0</span></td>
+                            <td><strong>严重缺陷</strong><span class="lang-en">Serious Deficient</span></td>
+                            <td>未达到标准要求，或该项内容完全缺失。<span class="lang-en">Does not meet standard requirements, or the item is entirely absent.</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="levels">
+            <h2 class="section-title">APEX 评审结果、等级与升级机制</h2>
+            <div class="level-upgrade-box">
+                <h3 style="color: var(--primary-blue); margin-bottom: 1rem; font-size: 1.3rem;">评审结果和等级</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">机构的最终得分经专家组加权计算后，认证等级及评审结果划分为以下级别。顺利通过认证的机构将获颁正式认证证书，有效期为 4 年：</p>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 250px;">评审结果和等级</th>
+                                <th style="text-align: center; width: 160px;">整体分数线</th>
+                                <th>分数释义</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>A级（甲级）</strong></td>
+                                <td style="text-align: center; font-weight: bold; color: var(--primary-blue);">&ge; 80%</td>
+                                <td>整体分数达到80% 或以上</td>
+                            </tr>
+                            <tr>
+                                <td><strong>B级（乙级）</strong></td>
+                                <td style="text-align: center; font-weight: bold;">70% - 79%</td>
+                                <td>整体分数为70% - 79%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>C级（丙级）</strong></td>
+                                <td style="text-align: center; font-weight: bold;">60% - 69%</td>
+                                <td>整体分数为60% - 69%</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: var(--danger-color);">不合格</strong></td>
+                                <td style="text-align: center; font-weight: bold; color: var(--danger-color);">&lt; 60%</td>
+                                <td>整体分数低于60%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="upgrade-section">
+                    <h3>等级升级</h3>
+                    <p>在4年认证有效期内，获得B级/C级认证的机构，在根据认证报告建议完成相关整改后，可向FMARC提出“升级申请”。</p>
+                    <p>被受理后，申请方需要完成简化评估，以检验其符合更高等级的有效性。成功通过可授予新认证证书，但不改变原证书的有效期。</p>
+                    <p style="font-weight: 600; margin-bottom: 0; color: #b45309;">因涉及额外认证工作所产生的额外费用（如人工成本），需由申请方承担。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="process">
+            <h2 class="section-title">APEX 正式认证流程</h2>
+            <div class="circle-process-container">
+                
+                <div class="process-circle-item">
+                    <div class="circle-num">1</div>
+                    <div class="circle-title">申请咨询</div>
+                    <div class="circle-desc">向 FMARC 表达认证意向，确认申请资格、申请费用等。FMARC 提供认证前咨询服务。</div>
+                </div>
+
+                <div class="process-circle-item">
+                    <div class="circle-num">2</div>
+                    <div class="circle-title">提交申请</div>
+                    <div class="circle-desc">完成《评审认证申请表》并按要求提供相关佐证材料，在指定时间内提交所有文件。</div>
+                </div>
+
+                <div class="process-circle-item">
+                    <div class="circle-num">3</div>
+                    <div class="circle-title">文件初审</div>
+                    <div class="circle-desc">FMARC 秘书处对材料进行初审，确认后发出具体认证时间、现场评审日期、《受理通知》和相关费用发票。</div>
+                </div>
+
+                <div class="process-circle-item">
+                    <div class="circle-num">4</div>
+                    <div class="circle-title">签约缴费</div>
+                    <div class="circle-desc">双方确认认证安排，签订认证合作协议（如需），申请方在指定时间缴付认证费用。</div>
+                </div>
+
+                <div class="process-circle-item">
+                    <div class="circle-num">5</div>
+                    <div class="circle-title">文件审核</div>
+                    <div class="circle-desc">FMARC 标准委员会评审专家将对材料进行全面评估（为时约2-3个月），必要时要求补充书面材料或进行线上会议厘清。</div>
+                </div>
+
+                <div class="process-circle-item">
+                    <div class="circle-num">6</div>
+                    <div class="circle-title">现场评估</div>
+                    <div class="circle-desc">FMARC 专家到访现场进行评审（一般为期 2-3 天），流程包括现场参观、观察服务流程、与相关人士（管理层、医护人员、患者等）访谈等。</div>
+                </div>
+
+                <div class="process-circle-item">
+                    <div class="circle-num">7</div>
+                    <div class="circle-title">结果公布</div>
+                    <div class="circle-desc">最终认证报告提交委员会终审。顺利通过换发证书（有效期4年），机构进入持续质控与再认证的闭环提升轨道。</div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="fees">
+            <h2 class="section-title">认证收费</h2>
+            <div class="fee-box">
+                <p style="font-size: 1.1rem; color: var(--text-main);">基础认证费用</p>
+                <div class="fee-price">35,000 <span>元 +</span></div>
+                <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto;">
+                    最终费用视乎机构规模大小或有调整。具体详情请联系 FMARC 秘书处了解更多。
+                </p>
+            </div>
+        </section>
+
+        <section id="download">
+            <h2 class="section-title">资料下载与申请入口</h2>
+            <div class="download-panel">
+                <div class="download-links-grid">
+                    <a href="#" class="btn-file">📄 点击下载《APEX 国际基层医疗机构认证标准》</a>
+                    <a href="#" class="btn-file">📄 点击下载《APEX 国际基层医疗机构认证 - 评审认证申请表》</a>
+                    <a href="#" class="btn-file">📄 点击下载《APEX 国际基层医疗机构认证 - 申请表填写指引》</a>
+                </div>
+                <div class="online-portal">
+                    <a href="apply.html" class="btn btn-primary btn-large">进入 APEX 在线认证申请系统</a>
+                    <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 12px;">* 系统支持在线填写基础信息、指定对接人、批量上传佐证材料电子版并跟踪初审状态</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="registry">
+            <h2 class="section-title">已获认证机构名录 (官方实时公示)</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>机构名称</th>
+                            <th style="width: 160px;">首次获证日期</th>
+                            <th style="width: 150px;">认证级别</th>
+                            <th style="width: 200px;">证书状态 / 有效期至</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>深圳市宝安区中心医院港澳居民健康服务中心</strong></td>
+                            <td>2023年11月</td>
+                            <td><span style="color: var(--primary-blue); font-weight: 600;">Excellent</span></td>
+                            <td><span class="status-dot">有效期内 (2027年11月)</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>深圳市宝安区人民医院港澳居民健康服务中心</strong></td>
+                            <td>2024年03月</td>
+                            <td><span style="color: var(--primary-blue); font-weight: 600;">Excellent</span></td>
+                            <td><span class="status-dot">有效期内 (2028年03月)</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>大湾区全科金牌社康诊室（首批试点示范网点区域）</strong></td>
+                            <td>2025年</td>
+                            <td><span style="color: var(--primary-blue); font-weight: 600;">Good</span></td>
+                            <td><span class="status-dot">有效期内 (2029年)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="hero-container">
+            <h2>深圳市粤港澳大湾区联合家庭医学评审评价研究中心 (GBA-FM-ARC)</h2>
+            <p>The GBA Family Medicine Accreditation & Research Center (Shenzhen)</p>
+            <p style="margin-top: 1.5rem; font-size: 0.85rem; opacity: 0.5;">&copy; 2026 GBA-FM-ARC. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
