@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>APEX 在线认证申请系统与管理后台 | GBA-FM-ARC</title>
+    <meta name="description" content="深圳市粤港澳大湾区联合家庭医学评审评价研究中心官方认证在线申报与内审管理终端。">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <style>
+        :root {
+            --primary-blue: #0f4c81;     /* 医疗深蓝 */
+            --accent-gold: #d4af37;       /* 品质金 */
+            --bg-light: #f8fafc;          /* 浅灰色背景 */
+            --bg-white: #ffffff;          /* 白色背景 */
+            --text-main: #2d3748;         /* 主文本色 */
+            --text-muted: #718096;        /* 次要文本色 */
+            --border-color: #e2e8f0;      /* 边框色 */
+            --success-color: #38a169;     /* 成功绿 */
+            --warning-amber: #b45309;     /* 警告橙 */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft YaHei", sans-serif; color: var(--text-main); background-color: var(--bg-light); line-height: 1.6; }
+
+        /* 统一顶栏 */
+        .sys-header { background-color: var(--primary-blue); color: var(--bg-white); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.08); position: relative; }
+        .sys-header h1 { font-size: 1.3rem; font-weight: 700; }
+        .user-info-bar { display: flex; align-items: center; gap: 15px; font-size: 0.95rem; }
+        .logout-btn { color: var(--accent-gold); text-decoration: none; font-weight: 600; cursor: pointer; }
+
+        /* 移动汉堡折叠适配开关 */
+        .menu-toggle { display: none; flex-direction: column; cursor: pointer; gap: 5px; padding: 5px; }
+        .menu-toggle .bar { width: 25px; height: 3px; background-color: var(--bg-white); transition: all 0.3s ease; border-radius: 2px; }
+
+        /* 统一容器布局 */
+        .sys-container { max-width: 1280px; margin: 2rem auto; padding: 0 1.5rem; }
+        .view-panel { display: none; background-color: var(--bg-white); border-radius: 8px; padding: 2.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid var(--border-color); }
+        .view-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+        /* 登录注册门禁 */
+        .login-box { max-width: 450px; margin: 5rem auto; background: var(--bg-white); padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-top: 5px solid var(--primary-blue); }
+        .login-tabs { display: flex; border-bottom: 2px solid var(--bg-light); margin-bottom: 2rem; }
+        .login-tab-item { flex: 1; text-align: center; padding: 0.8rem; cursor: pointer; font-weight: 600; color: var(--text-muted); }
+        .login-tab-item.active { color: var(--primary-blue); border-bottom: 3px solid var(--primary-blue); font-weight: 700; }
+
+        /* 表单控件基本样式 */
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.92rem; color: var(--text-main); }
+        .form-control { width: 100%; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.92rem; color: var(--text-main); }
+        .form-control:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+
+        /* 按钮设计体系 */
+        .btn { padding: 0.6rem 1.6rem; border-radius: 6px; border: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; display: inline-block; text-decoration: none; text-align: center; }
+        .btn-blue { background-color: var(--primary-blue); color: var(--bg-white); }
+        .btn-blue:hover { background-color: #0b3a63; }
+        .btn-green { background-color: var(--success-color); color: var(--bg-white); }
+        .btn-green:hover { background-color: #2f855a; }
+        .btn-outline { background-color: var(--bg-white); color: var(--primary-blue); border: 1px solid var(--primary-blue); }
+        .btn-outline:hover { background-color: #f0f4f8; }
+
+        /* 环形跟踪器 */
+        .progress-circle-flow { display: flex; justify-content: space-between; gap: 0.5rem; margin: 1.5rem 0; flex-wrap: wrap; }
+        .flow-node { flex: 1; min-width: 120px; text-align: center; background: #f8fafc; padding: 0.8rem 0.4rem; border-radius: 8px; border: 1px solid var(--border-color); opacity: 0.4; }
+        .flow-node.current { opacity: 1; border-color: var(--primary-blue); background-color: #f0f4f8; box-shadow: 0 4px 10px rgba(15,76,129,0.05); }
+        .flow-node.current .node-circle { background-color: var(--primary-blue); color: white; }
+        .node-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--primary-blue); color: var(--primary-blue); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-weight: bold; }
+        .node-text { font-size: 0.82rem; font-weight: 700; color: var(--primary-blue); }
+
+        /* 说明引导区块 */
+        .guide-alert-box { background-color: #f0f4f8; border-left: 5px solid var(--primary-blue); padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-size: 0.92rem; }
+        .guide-alert-box h4 { color: var(--primary-blue); font-weight: bold; margin-bottom: 0.3rem; }
+        
+        /* 结构化左右分步填报布局 */
+        .wizard-layout { display: flex; gap: 2rem; margin-top: 1.5rem; align-items: flex-start; }
+        .wizard-side { width: 280px; background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.8rem; position: sticky; top: 90px; z-index: 10; }
+        .wizard-tab { padding: 0.7rem 0.9rem; border-left: 4px solid transparent; cursor: pointer; font-size: 0.9rem; font-weight: 500; margin-bottom: 0.2rem; border-radius: 4px; }
+        .wizard-tab.active { background-color: #f0f4f8; border-left-color: var(--primary-blue); font-weight: 700; color: var(--primary-blue); }
+        .wizard-main { flex: 1; background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 6px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
+        .wizard-sec { display: none; }
+        .wizard-sec.active { display: block; }
+
+        /* 系统复杂多列表格样式 */
+        .form-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.88rem; background-color: var(--bg-white); }
+        .form-table th, .form-table td { padding: 8px 10px; border: 1px solid var(--border-color); text-align: left; vertical-align: middle; }
+        .form-table th { background-color: var(--bg-light); color: var(--primary-blue); font-weight: 700; }
+        .choice-group { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+        .choice-lbl { display: flex; align-items: center; gap: 4px; cursor: pointer; font-weight: 500 !important; }
+
+        /* 后台高保真审查样式 */
+        .report-display { background-color: #fefaf0; border: 1px dashed rgba(212,175,55,0.6); padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem; }
+        .admin-review-canvas { border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 8px; max-height: 500px; overflow-y: auto; background-color: #f8fafc; margin-bottom: 2rem; }
+        .review-block-title { font-size: 1.1rem; color: var(--primary-blue); font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.8rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; }
+        .review-text-item { font-size: 0.92rem; margin-bottom: 0.5rem; color: var(--text-main); background: #fff; padding: 6px 12px; border-radius: 4px; border: 1px solid #edf2f7; }
+        .review-text-item strong { color: #4a5568; display: inline-block; width: 280px; }
+        .mock-dl-link { color: var(--primary-blue); text-decoration: underline; cursor: pointer; font-weight: bold; }
+        .mock-dl-link:hover { color: #0b3a63; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 移动响应式 */
+        @media (max-width: 1024px) {
+            .wizard-layout { flex-direction: column; }
+            .wizard-side { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 5px; }
+            .wizard-tab { border-left: none; border-bottom: 3px solid transparent; flex: 1; min-width: 130px; text-align: center; padding: 0.5rem; }
+            .wizard-tab.active { border-bottom-color: var(--primary-blue); background-color: #f0f4f8; }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; }
+            .user-info-bar { 
+                display: none; 
+                flex-direction: column; 
+                position: absolute; 
+                top: 100%; 
+                right: 0; 
+                background-color: var(--primary-blue); 
+                padding: 1rem; 
+                width: 200px; 
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                align-items: flex-start;
+                gap: 10px;
+                z-index: 1020;
+            }
+            .user-info-bar.active { display: flex; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="sys-header">
+        <h1>APEX 国际基层医疗机构认证综合管理平台</h1>
+        
+        <div class="menu-toggle" id="sys-menu-toggle" style="display:none;">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <div class="user-info-bar" id="userInfoBar" style="display: none;">
+            <span id="txtUserRole">角色定位：申请机构登录</span>
+            <span class="logout-btn" onclick="handleLogout()">【安全退出系统】</span>
+        </div>
+    </header>
+
+    <div class="sys-container" id="viewGate">
+        <div class="login-box">
+            <div class="login-tabs">
+                <div class="login-tab-item active" id="tabApplicant" onclick="switchGateTab('applicant')">申请机构登录</div>
+                <div class="login-tab-item" id="tabSecretariat" onclick="switchGateTab('secretariat')">管理后台</div>
+            </div>
+            
+            <div id="formApplicantBlock">
+                <div class="form-group">
+                    <label>登录账号 / 电子邮箱</label>
+                    <input type="text" class="form-control" id="appAccount" placeholder="请输入您的申办邮箱">
+                </div>
+                <div class="form-group">
+                    <label>登录密码</label>
+                    <input type="password" class="form-control" id="appPassword" placeholder="请输入账号密码">
+                </div>
+                <button type="button" class="btn btn-blue" style="width: 100%; margin-bottom: 1rem;" onclick="performLogin('applicant')">立即登录系统</button>
+                <p style="text-align: center; font-size: 0.88rem; color: var(--text-muted);">
+                    尚未开设认证账户？<span style="color: var(--primary-blue); cursor: pointer; font-weight: bold;" onclick="toggleRegisterMode(true)">【点击注册账户】</span>
+                </p>
+            </div>
+
+            <div id="formRegisterBlock" style="display: none;">
+                <h3 style="font-size: 1.05rem; margin-bottom: 1.2rem; color: var(--primary-blue);">注册 APEX 认证申请账户</h3>
+                <div class="form-group">
+                    <label>拟申办医疗机构全称（中文）</label>
+                    <input type="text" class="form-control" id="regOrgName" placeholder="请与执业许可证红印全称保持一致">
+                </div>
+                <div class="form-group">
+                    <label>设置登录邮箱/账号</label>
+                    <input type="email" class="form-control" id="regEmail">
+                </div>
+                <div class="form-group">
+                    <label>设置系统安全密码</label>
+                    <input type="password" class="form-control" id="regPass">
+                </div>
+                <button type="button" class="btn btn-green" style="width: 100%; margin-bottom: 1rem;" onclick="performRegistration()">注册账户</button>
+                <button type="button" class="btn btn-outline" style="width: 100%;" onclick="toggleRegisterMode(false)">返回登录界面</button>
+            </div>
+
+            <div id="formSecretariatBlock" style="display: none;">
+                <div class="form-group">
+                    <label>管理后台账号</label>
+                    <input type="text" class="form-control" id="secAccount" placeholder="请输入管理后台账号">
+                </div>
+                <div class="form-group">
+                    <label>管理后台密码</label>
+                    <input type="password" class="form-control" id="secPassword" placeholder="请输入管理后台密码">
+                </div>
+                <button type="button" class="btn btn-blue" style="width: 100%;" onclick="performLogin('secretariat')">进入中央控制后台</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sys-container view-panel" id="viewApplicantPortal">
+        <h2 style="color: var(--primary-blue); margin-bottom: 1rem;" id="lblApplicantHeader">欢迎您进驻系统</h2>
+        
+        <div class="guide-alert-box" style="background-color: var(--bg-white); border: 1px solid var(--border-color);">
+            <h4>🧭 机构 APEX 正式认证生命周期全流程实时跟踪看板</h4>
+            <div class="progress-circle-flow" id="progressFlowContainer">
+                <div class="flow-node" id="node1"><div class="node-circle">1</div><div class="node-text">申请咨询</div></div>
+                <div class="flow-node" id="node2"><div class="node-circle">2</div><div class="node-text">提交申请</div></div>
+                <div class="flow-node" id="node3"><div class="node-circle">3</div><div class="node-text">文件初审</div></div>
+                <div class="flow-node" id="node4"><div class="node-circle">4</div><div class="node-text">签约缴费</div></div>
+                <div class="flow-node" id="node5"><div class="node-circle">5</div><div class="node-text">文件审核</div></div>
+                <div class="flow-node" id="node6"><div class="node-circle">6</div><div class="node-text">现场评估</div></div>
+                <div class="flow-node" id="node7"><div class="node-circle">7</div><div class="node-text">结果公布</div></div>
+            </div>
+        </div>
+
+        <div class="report-display" id="applicantReportBlock" style="display: none;">
+            <h4 style="color: var(--warning-amber); margin-bottom: 0.5rem;">📜 FMARC 标准委员会评审等级与终审报告公告</h4>
+            <div id="txtReportView" style="white-space: pre-line; font-size: 0.95rem; color: #451a03;">暂无报告内容</div>
+        </div>
+
+        <div id="applicationFormContainer" style="margin-top: 2.5rem;">
+            <div class="wizard-layout">
+                <div class="wizard-side">
+                    <div class="wizard-tab active" id="wTab1" onclick="switchWizardTab(1)">第（一）部分：机构基本信息</div>
+                    <div class="wizard-tab" id="wTab2" onclick="switchWizardTab(2)">第（二）部分：内审员信息</div>
+                    <div class="wizard-tab" id="wTab3" onclick="switchWizardTab(3)">第（三）部分：详细信息申报</div>
+                    <div class="wizard-tab" id="wTab4" onclick="switchWizardTab(4)">第（四）部分：佐证文件清单</div>
+                    <div class="wizard-tab" id="wTab5" onclick="switchWizardTab(5)">第（五）部分：申请确认</div>
+                </div>
+                
+                <div class="wizard-main" id="wizardMainForm">
+                    <div class="wizard-sec active" id="wSec1">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue);">第（一）部分：机构基本信息</h3>
+                        <div class="grid-2">
+                            <div class="form-group"><label>医疗机构全称（中文）</label><input type="text" class="form-control" id="f_org_name" disabled></div>
+                            <div class="form-group"><label>医疗机构全称（英文）</label><input type="text" class="form-control" id="f_org_name_en"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label>统一社会信用代码 / 商业登记证编号</label><input type="text" class="form-control" id="f_social_code"></div>
+                            <div class="form-group"><label>医疗执业许可证登记号</label><input type="text" class="form-control" id="f_license_reg_num"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>机构类型</label>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="公立医院全科医学部/家庭医学门诊"> 公立医院全科医学部 / 家庭医学门诊</label>
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="私立医院全科医学部/家庭医学门诊"> 私立医院全科医学部 / 家庭医学门诊</label>
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="社区卫生服务中心/站"> 社区卫生服务中心/站</label>
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="乡镇卫生院"> 乡镇卫生院</label>
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="家庭医生/全科诊所（医疗集团、合资）"> 家庭医生/全科诊所（医疗集团、合资）</label>
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="家庭医生/全科诊所（独资）"> 家庭医生/全科诊所（独资）</label>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>机构地址</label><input type="text" class="form-control" id="f_address"></div>
+                        <div class="grid-2">
+                            <div class="form-group"><label>总占地面积（平方米）</label><input type="number" class="form-control" id="f_area"></div>
+                            <div class="form-group"><label>机构联系电话</label><input type="tel" class="form-control" id="f_phone"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label>服务常驻人口数（人）</label><input type="number" class="form-control" id="f_pop_served"></div>
+                            <div class="form-group"><label>机构官网</label><input type="url" class="form-control" id="f_website"></div>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group"><label>机构法人/负责人姓名</label><input type="text" class="form-control" id="f_legal_name"></div>
+                            <div class="form-group"><label>负责人联系电话</label><input type="tel" class="form-control" id="f_legal_phone"></div>
+                            <div class="form-group"><label>机构开业日期</label><input type="date" class="form-control" id="f_open_date"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label>机构开放时间</label><input type="text" class="form-control" id="f_work_hours" placeholder="如周一至周五 08:00-17:00"></div>
+                            <div class="form-group">
+                                <label>是否已有其他国际认证</label>
+                                <div class="choice-group" style="padding-top:0.5rem;">
+                                    <label class="choice-lbl"><input type="radio" name="f_has_intl_cert" value="是"> 是</label>
+                                    <label class="choice-lbl"><input type="radio" name="f_has_intl_cert" value="否"> 否</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-sec" id="wSec2">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue);">第（二）部分：内审员信息</h3>
+                        <div class="grid-2">
+                            <div class="form-group"><label>内审员姓名（中文）</label><input type="text" class="form-control" id="f_auditor_cn"></div>
+                            <div class="form-group"><label>内审员姓名（英文）</label><input type="text" class="form-control" id="f_auditor_en"></div>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group"><label>机构内职务</label><input type="text" class="form-control" id="f_auditor_title"></div>
+                            <div class="form-group"><label>联系电话</label><input type="tel" class="form-control" id="f_auditor_phone"></div>
+                            <div class="form-group"><label>电子邮箱</label><input type="email" class="form-control" id="f_auditor_email"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>主要职责简述</label>
+                            <textarea class="form-control" id="f_auditor_duty" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="wizard-sec" id="wSec3">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue);">第（三）部分：详细信息申报</h3>
+                        
+                        <h4 style="color: var(--primary-blue); margin-bottom:0.6rem;">1. 服务机构资质与管理标准 - 机构资质</h4>
+                        <div class="grid-2">
+                            <div class="form-group"><label>医疗执业许可证编号（商业登记证编号）</label><input type="text" class="form-control" id="f_sub_lic_num"></div>
+                            <div class="form-group"><label>诊疗科目</label><input type="text" class="form-control" id="f_sub_lic_sub"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label>发证机关</label><input type="text" class="form-control" id="f_sub_lic_auth"></div>
+                            <div class="form-group"><label>有效期至</label><input type="date" class="form-control" id="f_sub_lic_expiry"></div>
+                        </div>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;">2. 组织架构与职责</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th style="width:250px;">岗位名称</th><th>姓名</th><th>主要职责简要说明</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>法定代表人 / 董事</strong></td><td><input type="text" class="form-control" id="f_owner_name_1"></td><td><input type="text" class="form-control" id="f_owner_duty_1"></td></tr>
+                                <tr><td><strong>医疗主管</strong></td><td><input type="text" class="form-control" id="f_owner_name_2"></td><td><input type="text" class="form-control" id="f_owner_duty_2"></td></tr>
+                                <tr><td><strong>护理主管</strong></td><td><input type="text" class="form-control" id="f_owner_name_3"></td><td><input type="text" class="form-control" id="f_owner_duty_3"></td></tr>
+                                <tr><td><strong>质量与安全负责人</strong></td><td><input type="text" class="form-control" id="f_owner_name_4"></td><td><input type="text" class="form-control" id="f_owner_duty_4"></td></tr>
+                                <tr><td><strong>服务协调负责人（保险、转诊等）</strong></td><td><input type="text" class="form-control" id="f_owner_name_5"></td><td><input type="text" class="form-control" id="f_owner_duty_5"></td></tr>
+                            </tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;">3. 基础设施与功能区详情</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th>功能区名称</th><th style="width:100px;">数量</th><th style="width:120px;">面积(m2)</th><th>主要用途与提供的服务</th></tr>
+                            </thead>
+                            <tbody id="functionalZoneBody">
+                                <tr><td><strong>接待/报到区</strong></td><td><input type="number" class="form-control"></td><td><input type="number" class="form-control"></td><td><input type="text" class="form-control"></td></tr>
+                                <tr><td><strong>分诊区</strong></td><td><input type="number" class="form-control"></td><td><input type="number" class="form-control"></td><td><input type="text" class="form-control"></td></tr>
+                                <tr><td><strong>候诊区</strong></td><td><input type="number" class="form-control"></td><td><input type="number" class="form-control"></td><td><input type="text" class="form-control"></td></tr>
+                                <tr><td><strong>全科诊室</strong></td><td><input type="number" class="form-control"></td><td><input type="number" class="form-control"></td><td><input type="text" class="form-control"></td></tr>
+                                <tr><td><strong>治疗室</strong></td><td><input type="number" class="form-control"></td><td><input type="number" class="form-control"></td><td><input type="text" class="form-control"></td></tr>
+                                <tr><td><strong>药房</strong></td><td><input type="number" class="form-control"></td><td><input type="number" class="form-control"></td><td><input type="text" class="form-control"></td></tr>
+                                <tr><td><strong>卫生间</strong></td><td><input type="number" class="form-control"></td><td><input type="number" class="form-control"></td><td><input type="text" class="form-control"></td></tr>
+                                <tr><td><strong>无障碍卫生间</strong></td><td><input type="number" class="form-control"></td><td><input type="number" class="form-control"></td><td><input type="text" class="form-control"></td></tr>
+                                <tr><td><input type="text" class="form-control" placeholder="其他科室（请注明）"></td><td><input type="number" class="form-control"></td><td><input type="number" class="form-control"></td><td><input type="text" class="form-control"></td></tr>
+                                <tr><td><strong>备注/缺失/豁免说明</strong></td><td colspan="3"><input type="text" class="form-control"></td></tr>
+                            </tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;">4. 管理制度（SOP）</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th>制度名称</th><th>文件名称 / 对应章节</th><th style="width:230px;">当前状态</th><th>执行负责人(姓名和职务)</th></tr>
+                            </thead>
+                            <tbody id="sopTableBody"></tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:2rem; margin-bottom:0.6rem;">5. 服务人员资质与能力要求</h4>
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color);">（1）家庭医生/全科医生</p>
+                        <div class="grid-3">
+                            <div class="form-group"><label>全科医生总数（名）</label><input type="number" class="form-control" id="f_dr_total"></div>
+                            <div class="form-group"><label>内地注册医生（名）</label><input type="number" class="form-control" id="f_dr_nl"></div>
+                            <div class="form-group"><label>香港注册医生（名）</label><input type="number" class="form-control" id="f_dr_hk"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label>澳门与其它地区注册医生（名）</label><input type="number" class="form-control" id="f_dr_mo"></div>
+                            <div class="form-group"><label>临床经验 &ge; 3年的医生占比（%）</label><input type="text" class="form-control" id="f_dr_exp"></div>
+                        </div>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;">（2）护理人员</p>
+                        <div class="grid-3">
+                            <div class="form-group"><label>全科护士总数（名）</label><input type="number" class="form-control" id="f_ns_total"></div>
+                            <div class="form-group"><label>内地注册护士（名）</label><input type="number" class="form-control" id="f_ns_nl"></div>
+                            <div class="form-group"><label>香港注册护士（名）</label><input type="number" class="form-control" id="f_ns_hk"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label>澳门与其它地区注册护士（名）</label><input type="number" class="form-control" id="f_ns_mo"></div>
+                            <div class="form-group"><label>临床经验 &ge; 3年的护士占比（%）</label><input type="text" class="form-control" id="f_ns_exp"></div>
+                        </div>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;">（3）其他辅助人员统计数（名）</p>
+                        <div class="grid-3">
+                            <div class="form-group"><label>药师</label><input type="number" class="form-control" id="f_aux_1"></div>
+                            <div class="form-group"><label>公卫医师</label><input type="number" class="form-control" id="f_aux_2"></div>
+                            <div class="form-group"><label>健康管理师</label><input type="number" class="form-control" id="f_aux_3"></div>
+                            <div class="form-group"><label>营养师</label><input type="number" class="form-control" id="f_aux_4"></div>
+                            <div class="form-group"><label>康复治疗师</label><input type="number" class="form-control" id="f_aux_5"></div>
+                            <div class="form-group"><label>心理咨询师</label><input type="number" class="form-control" id="f_aux_6"></div>
+                            <div class="form-group"><label>前台 / 接待人员</label><input type="number" class="form-control" id="f_aux_7"></div>
+                            <div class="form-group"><label>陪诊员</label><input type="number" class="form-control" id="f_aux_8"></div>
+                            <div class="form-group"><label>其他</label><input type="text" class="form-control" id="f_aux_9"></div>
+                        </div>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;">（4）语言能力</p>
+                        <div class="form-group">
+                            <label>提供的主要服务语种</label>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="checkbox" name="f_lang_type" value="普通话"> 普通话</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_lang_type" value="粤语"> 粤语</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_lang_type" value="英语"> 英语</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_lang_type" value="其他"> 其他语种</label>
+                            </div>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group"><label>能提供英语服务医生占比(%)</label><input type="text" class="form-control" id="f_lang_dr"></div>
+                            <div class="form-group"><label>能提供英语服务护士占比(%)</label><input type="text" class="form-control" id="f_lang_ns"></div>
+                            <div class="form-group"><label>能提供英语服务前台占比(%)</label><input type="text" class="form-control" id="f_lang_front"></div>
+                        </div>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;">（5）持续专业发展与培训（CPD）</p>
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>是否有制定内部年度培训计划</label>
+                                <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_cpd_plan" value="是"> 是</label><label class="choice-lbl"><input type="radio" name="f_cpd_plan" value="否"> 否</label></div>
+                            </div>
+                            <div class="form-group"><label>内部年平均组织内训场次</label><input type="number" class="form-control" id="f_cpd_count"></div>
+                            <div class="form-group"><label>过去1年参与国际课程医护人数</label><input type="number" class="form-control" id="f_cpd_intl"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>是否有为员工提供反馈意见、心理支持的渠道及简要说明</label>
+                            <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_cpd_psy" value="是"> 是</label><label class="choice-lbl"><input type="radio" name="f_cpd_psy" value="否"> 否</label></div>
+                            <input type="text" class="form-control" style="margin-top:5px;" id="f_cpd_psy_txt">
+                        </div>
+                        <div class="form-group">
+                            <label>是否有定期组织员工满意度调查？</label>
+                            <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_cpd_eval" value="是"> 是</label><label class="choice-lbl"><input type="radio" name="f_cpd_eval" value="否"> 否</label></div>
+                        </div>
+
+                        <h4 style="color: var(--primary-blue); margin-top:2rem; margin-bottom:0.6rem;">6. 服务内容与提供方式申报</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th>服务项目</th><th style="width:280px;">提供方式</th><th>服务负责人 / 协作机构全称</th></tr>
+                            </thead>
+                            <tbody id="srvItemTableBody"></tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;">（2）本地转诊网络配置</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th style="width:70px;">序号</th><th>机构名称</th><th style="width:250px;">机构类型</th><th>主要转诊原因 / 服务项目</th></tr>
+                            </thead>
+                            <tbody id="localReferralTableBody"></tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;">（3）线上互联网医院服务详情</h4>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>是否取得互联网诊疗资质</label>
+                                <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_net_hospital" value="是"> 是</label><label class="choice-lbl"><input type="radio" name="f_net_hospital" value="否"> 否</label></div>
+                            </div>
+                            <div class="form-group">
+                                <label>线上开诊服务时间</label>
+                                <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_net_time" value="7x24"> 7&times;24小时</label><label class="choice-lbl"><input type="radio" name="f_net_time" value="固定时段"> 固定时段</label><label class="choice-lbl"><input type="radio" name="f_net_time" value="预约制"> 预约制</label></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>主要服务平台及链接</label>
+                            <div class="choice-group" style="margin-bottom:5px;"><label class="choice-lbl"><input type="checkbox" name="f_net_plat" value="自有APP"> 自有网页版/APP</label><label class="choice-lbl"><input type="checkbox" name="f_net_plat" value="微信小程序"> 微信小程序</label><label class="choice-lbl"><input type="checkbox" name="f_net_plat" value="第三方"> 第三方平台</label></div>
+                            <input type="url" class="form-control" id="f_net_url">
+                        </div>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;">（4）支付形式</h4>
+                        <div class="form-group">
+                            <label>机构支持的支付方式</label>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="checkbox" name="f_pay_sys" value="内地医保结算"> 内地医保结算</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_pay_sys" value="商业医疗保险直付结算"> 商业医疗保险直付结算</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_pay_sys" value="自费"> 现金/刷卡/移动支付（自费）</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_pay_sys" value="医疗卡结算"> 医疗卡结算</label>
+                            </div>
+                        </div>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;">（5）跨境医疗服务网络</h4>
+                        <div class="form-group">
+                            <label>是否提供跨境服务</label>
+                            <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_cross_border" value="是"> 是</label><label class="choice-lbl"><input type="radio" name="f_cross_border" value="否"> 否</label></div>
+                        </div>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th style="width:70px;">序号</th><th>机构名称</th><th style="width:230px;">所在地</th><th style="width:180px;">机构类型</th><th>主要协作内容</th></tr>
+                            </thead>
+                            <tbody id="crossBorderTableBody"></tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:2rem; margin-bottom:0.6rem;">7. 患者安全与数据管理自评</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th>自评审查项目</th><th>具体评审指标</th><th style="width:130px;">机构自评</th></tr>
+                            </thead>
+                            <tbody id="safetySelfTableBody"></tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:2rem; margin-bottom:0.6rem;">8. 服务质量控制管理</h4>
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color);">（1）内部质量控制活动数据（过去12个月记录）</p>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th>质量控制类型</th><th>过去12个月实际开展次数</th><th>具体的质控方法</th><th>负责人</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>线下服务质控</td><td><input type="number" class="form-control" id="f_qc_in_c1"></td><td><input type="text" class="form-control" id="f_qc_in_m1"></td><td><input type="text" class="form-control" id="f_qc_in_o1"></td></tr>
+                                <tr><td>线上服务质控</td><td><input type="number" class="form-control" id="f_qc_in_c2"></td><td><input type="text" class="form-control" id="f_qc_in_m2"></td><td><input type="text" class="form-control" id="f_qc_in_o2"></td></tr>
+                                <tr><td>临床质控</td><td><input type="number" class="form-control" id="f_qc_in_c3"></td><td><input type="text" class="form-control" id="f_qc_in_m3"></td><td><input type="text" class="form-control" id="f_qc_in_o3"></td></tr>
+                            </tbody>
+                        </table>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;">（2）外部评价与患者反馈</p>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th>外部质控类型</th><th>过去12个月开展次数</th><th>总收集反馈数量（份）</th><th>采集方法</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>患者满意度调查</td><td><input type="number" class="form-control" id="f_qc_ex_c1"></td><td><input type="number" class="form-control" id="f_qc_ex_r1"></td><td><input type="text" class="form-control" id="f_qc_ex_m1"></td></tr>
+                                <tr><td>神秘顾客/患者</td><td><input type="number" class="form-control" id="f_qc_ex_c2"></td><td><input type="number" class="form-control" id="f_qc_ex_r2"></td><td><input type="text" class="form-control" id="f_qc_ex_m2"></td></tr>
+                            </tbody>
+                        </table>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;">（3）投诉与反馈处理</p>
+                        <div class="form-group">
+                            <label>机构是否设有便捷的患者反馈渠道</label>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="意见收集箱"> 意见收集箱</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="现场反馈窗口"> 现场反馈窗口</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="专用热线"> 专用热线电话</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="官网反馈"> 官网反馈渠道</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="微信小程序"> 微信小程序</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="随访电话"> 随访电话</label>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label>过去12个月内共收集多少单患者投诉案例？</label><input type="number" class="form-control" id="f_complaint_val"></div>
+                            <div class="form-group"><label>当中已受理并顺利解决的案例占比为？（%）</label><input type="text" class="form-control" id="f_resolved_val"></div>
+                        </div>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;">（4）质控数据应用（双闭环案例简述）</p>
+                        <div style="border: 1px solid var(--border-color); padding: 1.2rem; border-radius:6px; margin-bottom:1rem;">
+                            <label style="font-weight:700; display:block; margin-bottom:0.5rem; color:var(--primary-blue);">案例（1）：</label>
+                            <div class="form-group"><label>数据问题来源</label>
+                                <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_case1_src" value="患者满意度调查"> 患者满意度调查</label><label class="choice-lbl"><input type="radio" name="f_case1_src" value="神秘患者质控"> 神秘患者质控</label><label class="choice-lbl"><input type="radio" name="f_case1_src" value="内部质控"> 内部质控</label><label class="choice-lbl"><input type="radio" name="f_case1_src" value="不良事件报告"> 不良事件报告</label></div>
+                            </div>
+                            <div class="form-group"><label>识别问题</label><input type="text" class="form-control" id="f_case1_p"></div>
+                            <div class="form-group"><label>计划措施</label><input type="text" class="form-control" id="f_case1_m"></div>
+                            <div class="form-group"><label>改进行动</label><input type="text" class="form-control" id="f_case1_a"></div>
+                            <div class="grid-3">
+                                <div class="form-group"><label>效果验证</label><input type="text" class="form-control" id="f_case1_v"></div>
+                                <div class="form-group"><label>最终结果</label><input type="text" class="form-control" id="f_case1_r"></div>
+                                <div class="form-group"><label>主要负责人</label><input type="text" class="form-control" id="f_case1_o"></div>
+                            </div>
+                        </div>
+                        <div style="border: 1px solid var(--border-color); padding: 1.2rem; border-radius:6px;">
+                            <label style="font-weight:700; display:block; margin-bottom:0.5rem; color:var(--primary-blue);">案例（2）：</label>
+                            <div class="form-group"><label>数据问题来源</label>
+                                <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_case2_src" value="患者满意度调查"> 患者满意度调查</label><label class="choice-lbl"><input type="radio" name="f_case2_src" value="神秘患者质控"> 神秘患者质控</label><label class="choice-lbl"><input type="radio" name="f_case2_src" value="内部质控"> 内部质控</label><label class="choice-lbl"><input type="radio" name="f_case2_src" value="不良事件报告"> 不良事件报告</label></div>
+                            </div>
+                            <div class="form-group"><label>识别问题</label><input type="text" class="form-control" id="f_case2_p"></div>
+                            <div class="form-group"><label>计划措施</label><input type="text" class="form-control" id="f_case2_m"></div>
+                            <div class="form-group"><label>改进行动</label><input type="text" class="form-control" id="f_case2_a"></div>
+                            <div class="grid-3">
+                                <div class="form-group"><label>效果验证</label><input type="text" class="form-control" id="f_case2_v"></div>
+                                <div class="form-group"><label>最终结果</label><input type="text" class="form-control" id="f_case2_r"></div>
+                                <div class="form-group"><label>主要负责人</label><input type="text" class="form-control" id="f_case2_o"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="wizard-sec" id="wSec4">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue);">第（四）部分：佐证文件清单</h3>
+                        <table class="form-table">
+                            <thead><tr><th style="width:70px; text-align:center;">序号</th><th>佐证文件大类</th><th style="width:120px; text-align:center;">自查状态</th><th>模拟上传文件名输入</th></tr></thead>
+                            <tbody id="docChecklistTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="wizard-sec" id="wSec5">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue);">第（五）部分：申请确认</h3>
+                        <div style="background-color: var(--bg-light); border:1px solid var(--border-color); border-radius:6px; padding:1.5rem; text-align:justify; font-size:0.95rem; margin-bottom:1.5rem;">
+                            <strong>申请机构承诺：</strong><br>
+                            本机构郑重承诺，本申请表所填信息及后续提交的所有资料均真实、准确、完整。如在申请及认证期间信息发生变更，本机构将在变更发生后30日内或预定的现场评审日前30日（以较早者为准）书面通知深圳市粤港澳大湾区联合家庭医学评审评价研究中心（下称“FMARC”）。若在申请或认证过程中发现虚假、伪造信息或材料，认证中心有权终止评审；如已获颁证书，认证中心有权撤销认证，且本机构在五年内不得再次申请。
+                        </div>
+                        <div class="form-group">
+                            <label class="choice-lbl" style="color:var(--primary-blue); font-size:1rem;">
+                                <input type="checkbox" id="f_formal_check_commit"> <strong>我单位已完全阅读并签署承诺公函</strong>
+                            </label>
+                        </div>
+                        <div class="form-group" style="margin-top:1.5rem;"><label>期望现场评审日期</label><input type="date" class="form-control" id="f_expect_audit_date" style="max-width:300px;"></div>
+                        <div class="grid-2" style="margin-top:1.5rem;">
+                            <div class="form-group"><label>法定代表人（亲笔签字确认）</label><input type="text" class="form-control" id="f_formal_signature"></div>
+                            <div class="form-group"><label>正式提报日期</label><input type="date" class="form-control" id="f_formal_date"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem; border-top:1px solid var(--border-color); padding-top:1.5rem; display:flex; justify-content:flex-end; gap:1rem;">
+                        <button type="button" class="btn btn-outline" onclick="saveDataDraft()">暂存申报资料卡</button>
+                        <button type="button" class="btn btn-blue" onclick="submitFormalData()" id="btnSystemSubmit">正式锁定并提交申请</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sys-container view-panel" id="viewSecretariatPortal">
+        <h2 style="color: var(--primary-blue); margin-bottom: 2rem;">FMARC 认证管理后台控制舱</h2>
+        
+        <div style="display: flex; gap: 2rem; align-items: flex-start;">
+            <div style="width: 320px; background-color: var(--bg-light); border-radius: 6px; padding: 1.2rem; border: 1px solid var(--border-color);">
+                <h4 style="margin-bottom: 1rem; color: var(--primary-blue);">机构信息提报序列</h4>
+                <div id="adminOrgListContainer"></div>
+            </div>
+
+            <div style="flex: 1; background-color: var(--bg-white); border: 1px solid var(--border-color); border-radius: 6px; padding: 2rem;" id="adminAuditPanel">
+                <h3 style="color: var(--primary-blue); border-bottom: 2px solid var(--bg-light); padding-bottom: 0.5rem; margin-bottom: 1.5rem;" id="auditTargetName">请在左侧列表中选定申办单位开展评审核验</h3>
+                
+                <div id="auditContentBody" style="display: none;">
+                    <div style="background-color: #f0f4f8; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem;">
+                        <label style="font-weight: 700; display: block; margin-bottom: 0.5rem; color: var(--primary-blue);">🔄 推进该机构认证项目所处的 APEX 生命周期流程节点：</label>
+                        <select class="form-control" id="optProgressStep" style="max-width: 280px; display: inline-block; margin-right: 1rem;">
+                            <option value="1">1. 申请咨询</option>
+                            <option value="2">2. 提交申请</option>
+                            <option value="3">3. 文件初审</option>
+                            <option value="4">4. 签约缴费</option>
+                            <option value="5">5. 文件审核</option>
+                            <option value="6">6. 现场评估</option>
+                            <option value="7">7. 结果公布</option>
+                        </select>
+                        <button type="button" class="btn btn-blue" onclick="adminExecuteUpdateStep()">完成生命周期更迭</button>
+                    </div>
+
+                    <h4 style="color: var(--primary-blue); margin-bottom: 0.8rem; font-weight:700;">🔍 申请机构填报表单数据高保真质控审查区：</h4>
+                    <div class="admin-review-canvas" id="adminReviewCanvasContainer"></div>
+
+                    <div class="form-group" style="border-top: 1px solid var(--border-color); padding-top:1.5rem;">
+                        <label style="color: var(--warning-amber); font-weight:700;">✍️ 秘书处内审专家意见与结论文书：</label>
+                        <textarea class="form-control" id="txtAdminReportArea" rows="6"></textarea>
+                    </div>
+                    <div style="display:flex; gap:1rem; justify-content:flex-end;">
+                        <button type="button" class="btn btn-outline" onclick="adminSaveReviewOnly()">暂存评审意见</button>
+                        <button type="button" class="btn btn-green" onclick="adminSubmitToNextStep()">提交进入下一步</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="background-color: #e2e8f0; color: var(--text-muted); border-top: 1px solid var(--border-color); text-align: center; padding: 2rem; margin-top: 5rem;">
+        <h2>深圳市粤港澳大湾区联合家庭医学评审评价研究中心 (GBA-FM-ARC)</h2>
+        <p>The GBA Family Medicine Accreditation & Research Center (Shenzhen)</p>
+    </footer>
+
+    <script>
+        let sessionUserKey = null;
+        let currentGateTab = 'applicant';
+        let currentWizardTab = 1;
+        let adminSelectedUserKey = null;
+        let dbInstance = null; // IndexedDB 实例对象
+
+        // 初始化浏览器原生高级结构化数据库 IndexedDB 核心配置
+        function initIndexedDBEngine() {
+            // 打开或创设名为 FmarcApexDB 的原生结构空间
+            const request = window.indexedDB.open("FmarcApexDB", 1);
+            
+            request.onerror = function(event) {
+                console.error("IndexedDB 初始化故障，改用安全内存容灾方案:", event.target.errorCode);
+            };
+            
+            request.onupgradeneeded = function(event) {
+                const db = event.target.result;
+                // 创建以用户账户为唯一索引主键的对象存储空间 (Object Store)
+                if (!db.objectStoreNames.contains("institutions")) {
+                    db.createObjectStore("institutions", { keyPath: "account" });
+                }
+            };
+            
+            request.onsuccess = function(event) {
+                dbInstance = event.target.result;
+                console.log("🏆 IndexedDB 原生关系数据库内核挂载成功，已全面取代废弃 WebSQL 模块。");
+                
+                // 演示数据包静默初始化审计
+                injectDemoDataIfEmpty();
+            };
+        }
+
+        // 异步数据操作原子封装：存储/更新机构数据包
+        function saveInstitutionToDB(userData, callback) {
+            if (!dbInstance) {
+                // 回滚容灾
+                localStorage.setItem(userData.account, JSON.stringify(userData));
+                if(callback) callback();
+                return;
+            }
+            const transaction = dbInstance.transaction(["institutions"], "readwrite");
+            const objectStore = transaction.objectStore("institutions");
+            const request = objectStore.put(userData);
+
+            request.onsuccess = function() {
+                if(callback) callback();
+            };
+            request.onerror = function() {
+                console.error("数据注入原子操作失败。");
+            };
+        }
+
+        // 异步数据操作原子封装：读取指定机构数据包
+        function getInstitutionFromDB(account, callback) {
+            if (!dbInstance) {
+                const raw = localStorage.getItem(account);
+                callback(raw ? JSON.parse(raw) : null);
+                return;
+            }
+            const transaction = dbInstance.transaction(["institutions"], "readonly");
+            const objectStore = transaction.objectStore("institutions");
+            const request = objectStore.get(account);
+
+            request.onsuccess = function(event) {
+                callback(event.target.result || null);
+            };
+        }
+
+        // 仿真数据注入审计
+        function injectDemoDataIfEmpty() {
+            getInstitutionFromDB("demo@hospital.com", function(res) {
+                if(!res) {
+                    const mockObj = {
+                        account: 'demo@hospital.com', password: '123',
+                        orgName: '大湾区整合型高品质全科社康中心案例网点',
+                        progressStep: 1, reportText: '', formSubmitted: false, formData: {}
+                    };
+                    saveInstitutionToDB(mockObj);
+                }
+            });
+        }
+
+        // 汉堡折叠响应逻辑挂载
+        document.addEventListener('DOMContentLoaded', function() {
+            initIndexedDBEngine();
+            const toggleBtn = document.getElementById('sys-menu-toggle');
+            const infoBar = document.getElementById('userInfoBar');
+            if(toggleBtn && infoBar) {
+                toggleBtn.addEventListener('click', function() {
+                    toggleBtn.classList.toggle('active');
+                    infoBar.classList.toggle('active');
+                });
+            }
+        });
+
+        // 以下表单自动组建渲染及控制流程
+        const sopsDataList = [
+            "服务质量管理体系", "患者安全与风险评估管理体系", "隐私保护与信息安全管理体系", "数据跨境传输管理体系",
+            "多语种服务管理规范", "直付服务操作流程", "跨境转诊协调流程", "患者投诉与反馈处理流程",
+            "药品管理与处方审核制度", "医疗设备管理制度", "紧急医疗事件应急预案", "环境可持续性管理政策",
+            "员工岗前与持续培训管理办法", "员工保障与心理安全支持政策", "医疗废物分类与处置制度", "AI工具临床应用管理办法（如适用）"
+        ];
+
+        const srvItemsList = [
+            "常见病、多发病诊疗", "慢性病管理", "预防保健服务", "伤口处理、换药等基础治疗", "常规检验检查", "心理健康咨询", "居家护理/上门随访", "康复指导", "安宁疗护"
+        ];
+
+        function buildDynamicFormTables() {
+            const sopBody = document.getElementById('sopTableBody');
+            sopBody.innerHTML = '';
+            sopsDataList.forEach((name, idx) => {
+                sopBody.innerHTML += `
+                    <tr>
+                        <td><strong>${name}</strong></td>
+                        <td><input type="text" class="form-control ds-input" data-key="sop_${idx}_doc"></td>
+                        <td>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="radio" name="sop_${idx}_status" value="已执行" class="ds-radio"> 已执行</label>
+                                <label class="choice-lbl"><input type="radio" name="sop_${idx}_status" value="筹备中" class="ds-radio"> 筹备中</label>
+                                <label class="choice-lbl"><input type="radio" name="sop_${idx}_status" value="无/不适用" class="ds-radio"> 无</label>
+                            </div>
+                        </td>
+                        <td><input type="text" class="form-control ds-input" data-key="sop_${idx}_owner"></td>
+                    </tr>
+                `;
+            });
+
+            const srvBody = document.getElementById('srvItemTableBody');
+            srvBody.innerHTML = '';
+            srvItemsList.forEach((name, idx) => {
+                srvBody.innerHTML += `
+                    <tr>
+                        <td><strong>${name}</strong></td>
+                        <td>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="radio" name="srv_${idx}_type" value="直接提供" class="ds-radio"> 直接提供</label>
+                                <label class="choice-lbl"><input type="radio" name="srv_${idx}_type" value="转介协作" class="ds-radio"> 与外部协作</label>
+                            </div>
+                        </td>
+                        <td><input type="text" class="form-control ds-input" data-key="srv_${idx}_owner"></td>
+                    </tr>
+                `;
+            });
+
+            const localBody = document.getElementById('localReferralTableBody');
+            localBody.innerHTML = '';
+            for(let i=1; i<=10; i++) {
+                localBody.innerHTML += `
+                    <tr>
+                        <td style="text-align:center;">${i}</td>
+                        <td><input type="text" class="form-control ds-input" data-key="local_ref_${i}_name"></td>
+                        <td><input type="text" class="form-control ds-input" data-key="local_ref_${i}_type"></td>
+                        <td><input type="text" class="form-control ds-input" data-key="local_ref_${i}_reason"></td>
+                    </tr>
+                `;
+            }
+
+            const crossBody = document.getElementById('crossBorderTableBody');
+            crossBody.innerHTML = '';
+            for(let i=1; i<=5; i++) {
+                crossBody.innerHTML += `
+                    <tr>
+                        <td style="text-align:center;">${i}</td>
+                        <td><input type="text" class="form-control ds-input" data-key="cross_ref_${i}_name"></td>
+                        <td>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="radio" name="cross_ref_${i}_loc" value="内地" class="ds-radio"> 内地</label>
+                                <label class="choice-lbl"><input type="radio" name="cross_ref_${i}_loc" value="香港" class="ds-radio"> 香港</label>
+                                <label class="choice-lbl"><input type="radio" name="cross_ref_${i}_loc" value="澳门" class="ds-radio"> 澳门</label>
+                            </div>
+                        </td>
+                        <td><input type="text" class="form-control ds-input" data-key="cross_ref_${i}_type"></td>
+                        <td><input type="text" class="form-control ds-input" data-key="cross_ref_${i}_content"></td>
+                    </tr>
+                `;
+            }
+
+            const safetyBody = document.getElementById('safetySelfTableBody');
+            safetyBody.innerHTML = '';
+            safetySelfList.forEach(item => {
+                let inputHtml = `
+                    <div class="choice-group">
+                        <label class="choice-lbl"><input type="radio" name="safe_${item.id}_bool" value="是" class="ds-radio"> 是</label>
+                        <label class="choice-lbl"><input type="radio" name="safe_${item.id}_bool" value="否" class="ds-radio"> 否</label>
+                        ${item.opt ? `<label class="choice-lbl"><input type="radio" name="safe_${item.id}_bool" value="不适用" class="ds-radio"> 不适用</label>` : ''}
+                    </div>
+                `;
+                if(item.type === 'text') {
+                    inputHtml += `<input type="text" class="form-control ds-input" style="margin-top:5px;" data-key="safe_${item.id}_txt" placeholder="${item.placeholder}">`;
+                }
+                safetyBody.innerHTML += `
+                    <tr><td><strong>${item.name}</strong></td><td>${item.req}</td><td>${inputHtml}</td></tr>
+                `;
+            });
+
+            const docBody = document.getElementById('docChecklistTableBody');
+            docBody.innerHTML = '';
+            filesList.forEach(item => {
+                docBody.innerHTML += `
+                    <tr>
+                        <td style="text-align:center;">${item.id}</td>
+                        <td><strong>[${item.type==='req'?'必要项':'可选项'}]</strong> ${item.name}</td>
+                        <td style="text-align:center;"><input type="checkbox" name="file_check_${item.id}" value="已提供" class="ds-checkbox">已提供</td>
+                        <td><input type="text" class="form-control ds-input" data-key="file_sim_name_${item.id}"></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function extractUIFormToObj() {
+            const obj = {};
+            document.querySelectorAll('.ds-input').forEach(el => {
+                obj[el.getAttribute('data-key')] = el.value;
+            });
+            const fixedIds = [
+                'f_org_name_en', 'f_social_code', 'f_license_reg_num', 'f_address', 'f_area', 'f_phone', 
+                'f_pop_served', 'f_website', 'f_legal_name', 'f_legal_phone', 'f_open_date', 'f_work_hours',
+                'f_auditor_cn', 'f_auditor_en', 'f_auditor_title', 'f_auditor_phone', 'f_auditor_email', 'f_auditor_duty',
+                'f_sub_lic_num', 'f_sub_lic_sub', 'f_sub_lic_auth', 'f_sub_lic_expiry',
+                'f_dr_total', 'f_dr_nl', 'f_dr_hk', 'f_dr_mo', 'f_dr_exp',
+                'f_ns_total', 'f_ns_nl', 'f_ns_hk', 'f_ns_mo', 'f_ns_exp',
+                'f_aux_1', 'f_aux_2', 'f_aux_3', 'f_aux_4', 'f_aux_5', 'f_aux_6', 'f_aux_7', 'f_aux_8', 'f_aux_9',
+                'f_lang_dr', 'f_lang_ns', 'f_lang_front', 'f_cpd_count', 'f_cpd_intl', 'f_cpd_psy_txt',
+                'f_comp_num', 'f_comp_rate', 'f_eval1_count', 'f_eval1_rep', 'f_eval1_method',
+                'f_eval2_count', 'f_eval2_rep', 'f_eval2_method', 'f_file1', 'f_file2', 'f_file3',
+                'f_complaint_val', 'f_resolved_val', 'f_case1_p', 'f_case1_m', 'f_case1_a', 'f_case1_v', 'f_case1_r', 'f_case1_o',
+                'f_case2_p', 'f_case2_m', 'f_case2_a', 'f_case2_v', 'f_case2_r', 'f_case2_o',
+                'f_expect_audit_date', 'f_formal_signature', 'f_formal_date'
+            ];
+            fixedIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) obj[id] = el.value;
+            });
+
+            for(let i=1; i<=5; i++){
+                obj[`f_owner_name_${i}`] = document.getElementById(`f_owner_name_${i}`).value;
+                obj[`f_owner_duty_${i}`] = document.getElementById(`f_owner_duty_${i}`).value;
+            }
+
+            document.querySelectorAll('.ds-radio:checked').forEach(el => {
+                obj[el.name] = el.value;
+            });
+            const radioNames = ['f_org_type', 'f_has_intl_cert', 'f_cpd_plan', 'f_cpd_psy', 'f_cpd_eval', 'f_net_hospital', 'f_net_time', 'f_cross_border', 'f_case1_src', 'f_case2_src'];
+            radioNames.forEach(name => {
+                const checkedEl = document.querySelector(`input[name="${name}"]:checked`);
+                if(checkedEl) obj[name] = checkedEl.value;
+            });
+
+            document.querySelectorAll('.ds-checkbox:checked').forEach(el => {
+                obj[el.name] = el.value;
+            });
+            const checkboxNames = ['f_lang_type', 'f_pay_sys', 'f_comp_chan', 'f_net_plat', 'f_feedback', 'f_pay'];
+            checkboxNames.forEach(name => {
+                const checkedArr = [];
+                document.querySelectorAll(`input[name="${name}"]:checked`).forEach(el => checkedArr.push(el.value));
+                obj[name] = checkedArr;
+            });
+
+            obj['formal_check_commit'] = document.getElementById('f_formal_check_commit').checked;
+
+            const zonesData = [];
+            const trs = document.querySelectorAll('#functionalZoneBody tr');
+            trs.forEach((tr) => {
+                const inputs = tr.querySelectorAll('input');
+                if(inputs.length === 3) {
+                    zonesData.push({ qty: inputs[0].value, size: inputs[1].value, use: inputs[2].value });
+                } else if(inputs.length === 4) {
+                    zonesData.push({ label: inputs[0].value, qty: inputs[1].value, size: inputs[2].value, use: inputs[3].value });
+                } else if(inputs.length === 1) {
+                    obj['f_zone_ex_remark'] = inputs[0].value;
+                }
+            });
+            obj['f_zones_matrix'] = zonesData;
+
+            return obj;
+        }
+
+        function fillGlobalFormDataToUI(obj) {
+            if(!obj) return;
+            
+            document.querySelectorAll('.ds-input').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (obj[key] !== undefined) el.value = obj[key];
+            });
+
+            Object.keys(obj).forEach(key => {
+                const el = document.getElementById(key);
+                if(el && el.type !== 'checkbox' && el.type !== 'radio') {
+                    el.value = obj[key];
+                }
+            });
+
+            for(let i=1; i<=5; i++){
+                if(obj[`f_owner_name_${i}`]) document.getElementById(`f_owner_name_${i}`).value = obj[`f_owner_name_${i}`];
+                if(obj[`f_owner_duty_${i}`]) document.getElementById(`f_owner_duty_${i}`).value = obj[`f_owner_duty_${i}`];
+            }
+
+            Object.keys(obj).forEach(key => {
+                if(typeof obj[key] === 'string') {
+                    const radio = document.querySelector(`input[name="${key}"][value="${obj[key]}"]`);
+                    if(radio) radio.checked = true;
+                }
+            });
+
+            Object.keys(obj).forEach(key => {
+                if(Array.isArray(obj[key])) {
+                    document.querySelectorAll(`input[name="${key}"]`).forEach(cb => {
+                        if(obj[key].includes(cb.value)) cb.checked = true;
+                    });
+                } else {
+                    const cb = document.querySelector(`input[name="${key}"]`);
+                    if(cb && obj[key] === '已提供') cb.checked = true;
+                }
+            });
+
+            document.getElementById('f_formal_check_commit').checked = obj['formal_check_commit'] || false;
+
+            if(obj['f_zones_matrix'] && Array.isArray(obj['f_zones_matrix'])) {
+                const trs = document.querySelectorAll('#functionalZoneBody tr');
+                let matrixIndex = 0;
+                trs.forEach((tr) => {
+                    const inputs = tr.querySelectorAll('input');
+                    const mData = obj['f_zones_matrix'][matrixIndex];
+                    if(mData) {
+                        if(inputs.length === 3) {
+                            inputs[0].value = mData.qty || ''; inputs[1].value = mData.size || ''; inputs[2].value = mData.use || '';
+                            matrixIndex++;
+                        } else if(inputs.length === 4) {
+                            inputs[0].value = mData.label || ''; inputs[1].value = mData.qty || ''; inputs[2].value = mData.size || ''; inputs[3].value = mData.use || '';
+                            matrixIndex++;
+                        }
+                    }
+                });
+            }
+            if(obj['f_zone_ex_remark']) document.querySelector('#functionalZoneBody tr input[placeholder*="缺失"]').value = obj['f_zone_ex_remark'];
+        }
+
+        // IndexedDB 驱动的异步数据暂存机制
+        function saveDataDraft() {
+            getInstitutionFromDB(sessionUserKey, function(userData) {
+                if(!userData) return;
+                userData.formData = extractUIFormToObj();
+                saveInstitutionToDB(userData, function() {
+                    alert('💾 资料暂存成功。所有自评及多维矩阵数据已安全注入本地 IndexedDB 库。');
+                });
+            });
+        }
+
+        function submitFormalData() {
+            const currentData = extractUIFormToObj();
+            if(!currentData.formal_check_commit) {
+                alert('请在第五部分勾选签署承诺复选框。');
+                switchWizardTab(5);
+                return;
+            }
+            if(!currentData.f_formal_signature) {
+                alert('请在第五部分签署代表姓名。');
+                switchWizardTab(5);
+                return;
+            }
+
+            getInstitutionFromDB(sessionUserKey, function(userData) {
+                if(!userData) return;
+                userData.formData = currentData;
+                userData.formSubmitted = true;
+                if (userData.progressStep <= 2) userData.progressStep = 3;
+
+                saveInstitutionToDB(userData, function() {
+                    alert('🚀 正式锁定并提交成功！数据已顺利进入初审控制流。');
+                    loadApplicantDashboard();
+                });
+            });
+        }
+
+        /* ================= 管理后台高保真真实风格审查面板 ================= */
+        function loadSecretariatDashboard() {
+            const container = document.getElementById('adminOrgListContainer');
+            container.innerHTML = '';
+
+            if(!dbInstance) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">正在唤醒原生数据库中...</p>';
+                return;
+            }
+
+            const transaction = dbInstance.transaction(["institutions"], "readonly");
+            const objectStore = transaction.objectStore("institutions");
+            const cursorRequest = objectStore.openCursor();
+            let hasRecords = false;
+
+            cursorRequest.onsuccess = function(event) {
+                const cursor = event.target.result;
+                if (cursor) {
+                    hasRecords = true;
+                    const uData = cursor.value;
+                    const item = document.createElement('div');
+                    item.style.padding = '10px';
+                    item.style.border = '1px solid var(--border-color)';
+                    item.style.backgroundColor = '#fff';
+                    item.style.marginBottom = '8px';
+                    item.style.borderRadius = '4px';
+                    item.style.cursor = 'pointer';
+                    item.style.fontSize = '0.88rem';
+                    item.innerHTML = `<strong>${uData.orgName}</strong><br><span style="color:var(--text-muted); font-size:0.8rem;">生命周期：[ 步骤 ${uData.progressStep} ] | 状态：${uData.formSubmitted?'正式锁定':'草稿暂存'}</span>`;
+                    
+                    const currentKey = uData.account;
+                    item.onclick = function() {
+                        adminSelectTargetOrg(currentKey);
+                    };
+                    container.appendChild(item);
+                    cursor.continue();
+                } else if(!hasRecords) {
+                    container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">暂无申请数据。</p>';
+                }
+            };
+        }
+
+        function renderHighFidelityReviewHtml(data, orgName) {
+            let html = `
+                <div class="review-block-title">第（一）部分：机构基本信息</div>
+                <div class="review-text-item"><strong>医疗机构全称（中文）：</strong>${orgName || ''}</div>
+                <div class="review-text-item"><strong>医疗机构全称（英文）：</strong>${data.f_org_name_en || ''}</div>
+                <div class="review-text-item"><strong>统一社会信用代码 / 商业登记证编号：</strong>${data.f_social_code || ''}</div>
+                <div class="review-text-item"><strong>医疗执业许可证登记号：</strong>${data.f_license_reg_num || ''}</div>
+                <div class="review-text-item"><strong>机构类型：</strong>${data.f_org_type || ''}</div>
+                <div class="review-text-item"><strong>机构地址：</strong>${data.f_address || ''}</div>
+                <div class="review-text-item"><strong>总占地面积（平方米）：</strong>${data.f_area || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>机构联系电话：</strong>${data.f_phone || ''}</div>
+                <div class="review-text-item"><strong>服务常驻人口数（人）：</strong>${data.f_pop_served || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>机构官网：</strong>${data.f_website || ''}</div>
+                <div class="review-text-item"><strong>机构法人/负责人姓名：</strong>${data.f_legal_name || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>负责人联系电话：</strong>${data.f_legal_phone || ''}</div>
+                <div class="review-text-item"><strong>机构开业日期：</strong>${data.f_open_date || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>开放时间：</strong>${data.f_work_hours || ''}</div>
+
+                <div class="review-block-title">第（二）部分：内审员信息</div>
+                <div class="review-text-item"><strong>内审员姓名（中文）：</strong>${data.f_auditor_cn || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>内审员姓名（英文）：</strong>${data.f_auditor_en || ''}</div>
+                <div class="review-text-item"><strong>机构内职务：</strong>${data.f_auditor_title || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>联系电话：</strong>${data.f_auditor_phone || ''}</div>
+                <div class="review-text-item"><strong>主要职责简述：</strong>${data.f_auditor_duty || ''}</div>
+
+                <div class="review-block-title">第（三）部分：详细信息申报</div>
+                <table class="form-table" style="font-size:0.82rem;">
+                    <thead><tr><th>岗位名称</th><th>姓名</th><th>主要职责说明</th></tr></thead>
+                    <tbody>
+                        <tr><td>法定代表人 / 董事</td><td>${data.f_owner_name_1 || ''}</td><td>${data.f_owner_duty_1 || ''}</td></tr>
+                        <tr><td>医疗主管</td><td>${data.f_owner_name_2 || ''}</td><td>${data.f_owner_duty_2 || ''}</td></tr>
+                        <tr><td>护理主管</td><td>${data.f_owner_name_3 || ''}</td><td>${data.f_owner_duty_3 || ''}</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="review-block-title">15项标准规章制度（SOP）核查状态</div>
+                <table class="form-table" style="font-size:0.82rem;">
+                    <thead><tr><th>制度名称</th><th>文件名称 / 对应章节</th><th>当前状态</th><th>执行负责人</th></tr></thead>
+                    <tbody>
+            `;
+            sopsDataList.forEach((name, idx) => {
+                html += `<tr><td><strong>${name}</strong></td><td>${data[`sop_${idx}_doc`] || ''}</td><td style="font-weight:bold; color:var(--primary-blue);">${data[`sop_${idx}_status`] || '未填'}</td><td>${data[`sop_${idx}_owner`] || ''}</td></tr>`;
+            });
+            html += `</tbody></table>`;
+
+            html += `
+                <div class="review-block-title">第（四）部分：佐证文件清单及原件电子版模拟调取</div>
+                <table class="form-table" style="font-size:0.82rem;">
+                    <thead><tr><th>序号</th><th>佐证文件大类</th><th>自查状态</th><th>已上传文件名附件 (点击模拟下载)</th></tr></thead>
+                    <tbody>
+            `;
+            filesList.forEach(item => {
+                const hasFile = data[`file_check_${item.id}`] === '已提供';
+                const simFileName = data[`file_sim_name_${item.id}`];
+                html += `
+                    <tr>
+                        <td style="text-align:center;">${item.id}</td>
+                        <td>${item.name}</td>
+                        <td style="font-weight:bold; color:var(--success-color);">${data[`file_check_${item.id}`] || '未提供'}</td>
+                        <td>
+                            ${hasFile && simFileName ? `📄 <span class="mock-dl-link" onclick="alert('📥 原材料已安全建立连接并加密下载：${simFileName}')">${simFileName} (点击下载)</span>` : '<span style="color:var(--text-muted);">未递交电子版</span>'}
+                        </td>
+                    </tr>
+                `;
+            });
+            html += `</tbody></table>`;
+
+            return html;
+        }
+
+        function adminSelectTargetOrg(userKey) {
+            adminSelectedUserKey = userKey;
+            getInstitutionFromDB(userKey, function(uData) {
+                if(!uData) return;
+                document.getElementById('auditTargetName').innerText = `🏢 正在进行全量穿透评审：${uData.orgName}`;
+                document.getElementById('auditContentBody').style.display = 'block';
+                document.getElementById('optProgressStep').value = uData.progressStep;
+                
+                const htmlCanvas = renderHighFidelityReviewHtml(uData.formData || {}, uData.orgName);
+                document.getElementById('adminReviewCanvasContainer').innerHTML = htmlCanvas;
+                document.getElementById('txtAdminReportArea').value = uData.reportText || '';
+            });
+        }
+
+        function adminExecuteUpdateStep() {
+            if(!adminSelectedUserKey) return;
+            const step = document.getElementById('optProgressStep').value;
+            
+            getInstitutionFromDB(adminSelectedUserKey, function(uData) {
+                if(!uData) return;
+                uData.progressStep = parseInt(step);
+                saveInstitutionToDB(uData, function() {
+                    alert(`⚙ 指令更迭成功：当前步骤已强行变更为：[ 步骤 ${step} ]。`);
+                    loadSecretariatDashboard();
+                });
+            });
+        }
+
+        function adminSaveReviewOnly() {
+            if(!adminSelectedUserKey) return;
+            const rep = document.getElementById('txtAdminReportArea').value;
+            
+            getInstitutionFromDB(adminSelectedUserKey, function(uData) {
+                if(!uData) return;
+                uData.reportText = rep;
+                saveInstitutionToDB(uData, function() {
+                    alert('💾 专家的内审反馈评审工作意见已成功暂存。');
+                });
+            });
+        }
+
+        function adminSubmitToNextStep() {
+            if(!adminSelectedUserKey) return;
+            const rep = document.getElementById('txtAdminReportArea').value;
+            
+            getInstitutionFromDB(adminSelectedUserKey, function(uData) {
+                if(!uData) return;
+                uData.reportText = rep;
+                if(uData.progressStep < 7) uData.progressStep += 1;
+
+                saveInstitutionToDB(uData, function() {
+                    alert(`🚀 专家审查决议封账提交！流程已自动推演至下一步骤：[ 步骤 ${uData.progressStep} ]！`);
+                    loadSecretariatDashboard();
+                    adminSelectTargetOrg(adminSelectedUserKey); 
+                });
+            });
+        }
+    </script>
+</body>
+</html>
