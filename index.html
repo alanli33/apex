@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>APEX 国际基层医疗机构认证 | 深圳市粤港澳大湾区联合家庭医学评审评价研究中心官方网站</title>
+    <meta name="description" content="深圳市粤港澳大湾区联合家庭医学评审评价研究中心（GBA-FM-ARC）官方门户。作为大湾区跨境医疗规则衔接的核心枢纽，权威发布并推行 APEX 国际基层医疗机构认证标准，提供在线认证申请、佐证材料上报、专家评审结论及获证机构公示，全面助力基层社康医疗高品质国际化转型。">
+    <meta name="keywords" content="GBA-FM-ARC, APEX认证, 基层医疗机构认证, 家庭医学评审评价, 跨境医疗协作, 深圳卫健委社会组织, 商业保险直付结算, 港式全科社康, 价值医疗大湾区, 前海深港医疗融合">
+    <meta name="author" content="深圳市粤港澳大湾区联合家庭医学评审评价研究中心">
+    <meta name="copyright" content="深圳市粤港澳大湾区联合家庭医学评审评价研究中心">
+    <meta name="robots" content="index, follow">
+    
+    <meta name="geo.region" content="CN-GD">
+    <meta name="geo.placename" content="Shenzhen">
+    <meta name="geo.position" content="22.5431;114.0579">
+    <meta name="ICBM" content="22.5431, 114.0579">
+    
+    <meta property="og:title" content="APEX 国际基层医疗机构认证体系 | GBA-FM-ARC 官方发布">
+    <meta property="og:description" content="对接国际通行规则，融合粤港澳三地临床实践，全方位铸造湾区高质量基层医疗价值服务闭环。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.fm-arc.com/">
+    <meta property="og:site_name" content="GBA-FM-ARC">
+
+    <style>
+        /* 全局样式与变量 */
+        :root {
+            --primary-blue: #0f4c81;     /* 医疗深蓝 */
+            --accent-gold: #d4af37;       /* 品质金 */
+            --bg-light: #f8fafc;          /* 浅灰色背景 */
+            --bg-white: #ffffff;          /* 白色背景 */
+            --text-main: #2d3748;         /* 主文本色 */
+            --text-muted: #718096;        /* 次要文本色 */
+            --border-color: #e2e8f0;      /* 边框色 */
+            --success-color: #38a169;     /* 成功绿 */
+            --danger-color: #e53e3e;      /* 警告红 */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft YaHei", sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-light);
+            line-height: 1.7;
+        }
+
+        /* 顶部导航与响应式移动端汉堡菜单 */
+        header {
+            background-color: var(--bg-white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-blue);
+        }
+
+        /* 🌐 语言切换组件样式 */
+        .lang-selector-wrapper { display: flex; align-items: center; }
+        .lang-select { background-color: var(--bg-light); color: var(--primary-blue); border: 1px solid var(--border-color); padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.88rem; cursor: pointer; outline: none; transition: all 0.3s; font-weight: 600; }
+        .lang-select:hover { background-color: #e2e8f0; }
+
+        /* 移动端汉堡菜单开关按钮 */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            padding: 5px;
+            z-index: 1010;
+        }
+
+        .menu-toggle .bar {
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary-blue);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        /* Banner 首屏区域 */
+        .hero-section {
+            background: linear-gradient(135deg, #0f4c81 0%, #1e3a8a 100%);
+            color: var(--bg-white);
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+
+        .hero-container { max-width: 900px; margin: 0 auto; }
+        .hero-section h1 { font-size: 2.6rem; margin-bottom: 1.5rem; font-weight: 700; }
+        .hero-section p { font-size: 1.1rem; margin-bottom: 2.5rem; opacity: 0.9; line-height: 1.8; }
+        
+        .btn-group { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; }
+        .btn { display: inline-block; padding: 0.75rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1rem; transition: all 0.3s ease; cursor: pointer; }
+        .btn-primary { background-color: var(--accent-gold); color: var(--bg-white); box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3); }
+        .btn-primary:hover { background-color: #c5a028; transform: translateY(-2px); }
+        .btn-outline { border: 2px solid var(--bg-white); color: var(--bg-white); }
+        .btn-outline:hover { background-color: var(--bg-white); color: var(--primary-blue); }
+
+        /* 主体内容布局 */
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
+        section { margin-bottom: 5rem; scroll-margin-top: 5rem; }
+        .section-title { font-size: 1.8rem; color: var(--primary-blue); margin-bottom: 2.5rem; text-align: center; position: relative; padding-bottom: 12px; }
+        .section-title::after { content: ""; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 4px; background-color: var(--accent-gold); border-radius: 2px; }
+
+        /* 简介卡片网格 */
+        .intro-container { background-color: var(--bg-white); border-radius: 12px; padding: 2.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid var(--border-color); margin-bottom: 2rem; }
+        .intro-background { background-color: #f0f4f8; border-left: 5px solid var(--primary-blue); padding: 1.5rem; border-radius: 4px; margin-bottom: 2rem; }
+        .intro-background h3 { color: var(--primary-blue); margin-bottom: 0.5rem; font-size: 1.2rem; }
+        
+        .intro-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .intro-card { background-color: var(--bg-light); border-radius: 8px; padding: 1.8rem; border-top: 4px solid var(--primary-blue); }
+        .intro-card h3 { color: var(--primary-blue); font-size: 1.15rem; margin-bottom: 1rem; }
+        .intro-card ul { list-style-position: inside; }
+        .intro-card li { margin-bottom: 0.6rem; color: var(--text-main); }
+
+        /* 30个维度网格配置不同颜色线 */
+        .dimension-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
+        .dimension-card { background-color: var(--bg-white); border-radius: 8px; padding: 1.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid var(--border-color); }
+        .dim-color-1 { border-top: 5px solid #0f4c81; } 
+        .dim-color-2 { border-top: 5px solid #0d9488; } 
+        .dim-color-3 { border-top: 5px solid #d97706; } 
+        .dim-color-4 { border-top: 5px solid #e11d48; } 
+        .dim-color-5 { border-top: 5px solid #7c3aed; } 
+        .dim-color-6 { border-top: 5px solid #4f46e5; } 
+        .dimension-card h3 { font-size: 1.1rem; margin-bottom: 1rem; border-bottom: 2px solid var(--bg-light); padding-bottom: 8px; }
+        .dim-color-1 h3 { color: #0f4c81; } .dim-color-2 h3 { color: #0d9488; } .dim-color-3 h3 { color: #d97706; } .dim-color-4 h3 { color: #e11d48; } .dim-color-5 h3 { color: #7c3aed; } .dim-color-6 h3 { color: #4f46e5; }
+        .dimension-list { list-style: none; }
+        .dimension-list li { position: relative; padding-left: 1.3rem; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.95rem; }
+        .dimension-list li::before { content: "•"; color: var(--accent-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px; }
+
+        /* 表格样式 */
+        .table-responsive { width: 100%; overflow-x: auto; background-color: var(--bg-white); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid var(--border-color); margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        th { background-color: #f8fafc; color: var(--primary-blue); font-weight: 700; }
+        tr:last-child td { border-bottom: none; }
+        .score-badge { background-color: var(--primary-blue); color: var(--bg-white); padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: bold; }
+        .lang-en { display: block; font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+
+        /* 评审结果与等级升级 */
+        .level-upgrade-box { background-color: var(--bg-white); border-radius: 12px; padding: 2.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid var(--border-color); }
+        .upgrade-section { margin-top: 3rem; background-color: #fefaf0; border: 1px dashed rgba(212, 175, 55, 0.4); border-radius: 8px; padding: 2rem; }
+        .upgrade-section h3 { color: #b45309; margin-bottom: 1rem; font-size: 1.25rem; }
+        .upgrade-section p { margin-bottom: 1rem; color: var(--text-main); text-align: justify; }
+
+        /* 优化版顺时针圆圈环形连贯处理链 */
+        .circle-process-container { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; position: relative; }
+        .process-circle-item { flex: 1; min-width: 140px; text-align: center; position: relative; background-color: var(--bg-white); padding: 1.5rem 0.8rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid var(--border-color); }
+        @media (min-width: 993px) { .process-circle-item:not(:last-child)::after { content: "➔"; position: absolute; right: -12px; top: 38px; color: rgba(15, 76, 129, 0.3); font-size: 1.2rem; z-index: 2; } }
+        .circle-num { width: 46px; height: 46px; border-radius: 50%; background-color: var(--bg-light); border: 3px solid var(--primary-blue); color: var(--primary-blue); font-weight: 700; font-size: 1.15rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 0 0 4px rgba(15, 76, 129, 0.05); transition: all 0.3s ease; }
+        .process-circle-item:hover .circle-num { background-color: var(--primary-blue); color: var(--bg-white); transform: scale(1.05); box-shadow: 0 0 0 6px rgba(15, 76, 129, 0.15); }
+        .circle-title { font-weight: 700; color: var(--primary-blue); font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .circle-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; text-align: justify; }
+
+        /* 认证收费 */
+        .fee-box { background-color: var(--bg-white); border-radius: 12px; padding: 3rem 2rem; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .fee-price { font-size: 2.8rem; font-weight: 800; color: var(--primary-blue); margin: 0.8rem 0; }
+        .fee-price span { font-size: 1.4rem; font-weight: 600; }
+
+        /* 资料下载中心 */
+        .download-panel { background-color: var(--bg-white); border-radius: 12px; padding: 3rem 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.02); text-align: center; border: 1px solid var(--border-color); }
+        .download-links-grid { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; margin-bottom: 2.5rem; }
+        .btn-file { background-color: #f1f5f9; color: var(--primary-blue); padding: 0.8rem 2rem; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 0.95rem; border: 1px solid var(--border-color); transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; width: 100%; max-width: 650px; justify-content: center; }
+        .btn-file:hover { background-color: #e2e8f0; }
+        .online-portal { border-top: 1px solid var(--border-color); padding-top: 2.5rem; }
+        .btn-large { padding: 1rem 3.5rem; font-size: 1.15rem; border-radius: 50px; }
+
+        /* 状态标识 */
+        .status-dot { color: var(--success-color); font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+        .status-dot::before { content: "●"; font-size: 0.8rem; }
+
+        /* 页脚 */
+        footer { background-color: var(--primary-blue); color: var(--bg-white); text-align: center; padding: 2.5rem 2rem; }
+        footer h2 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.4rem; }
+        footer p { font-size: 0.9rem; opacity: 0.6; }
+
+        /* 响应式媒体查询 */
+        @media (max-width: 992px) {
+            .circle-process-container { flex-direction: column; align-items: center; gap: 2rem; }
+            .process-circle-item { width: 100%; max-width: 450px; padding: 1.5rem 1.5rem; }
+        }
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; }
+            .header-right { flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background-color: var(--bg-white); box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 1.5rem 2rem; gap: 1.2rem; align-items: flex-start; display: none; }
+            .header-right.active { display: flex; animation: fadeIn 0.3s ease forwards; }
+            .nav-links { flex-direction: column; align-items: flex-start; gap: 1rem; width: 100%; }
+            .menu-toggle.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); background-color: var(--text-main); }
+            .menu-toggle.active .bar:nth-child(2) { opacity: 0; }
+            .menu-toggle.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); background-color: var(--text-main); }
+            .hero-section h1 { font-size: 1.8rem; }
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo" data-i18n="nav_logo">GBA-FM-ARC | APEX 认证体系</a>
+            
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+
+            <div class="header-right" id="headerRightZone">
+                <ul class="nav-links">
+                    <li><a href="#intro" data-i18n="nav_intro">标准简介</a></li>
+                    <li><a href="#dimensions" data-i18n="nav_dim">评分维度</a></li>
+                    <li><a href="#rubric" data-i18n="nav_rubric">评分准则</a></li>
+                    <li><a href="#levels" data-i18n="nav_level">级别与升级</a></li>
+                    <li><a href="#process" data-i18n="nav_process">认证流程</a></li>
+                    <li><a href="#fees" data-i18n="nav_fee">认证收费</a></li>
+                    <li><a href="#registry" data-i18n="nav_reg">获证名录</a></li>
+                </ul>
+                <div class="lang-selector-wrapper">
+                    <select class="lang-select" id="langSelectDropdown" onchange="executeLanguageSwitch(this.value)">
+                        <option value="zh-CN">简体中文</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-container">
+            <h1 data-i18n="hero_title">引领湾区家庭医学新标杆</h1>
+            <p data-i18n="hero_desc">APEX (International Accreditation for Primary Care Excellence) 是国际化的基层医疗与家庭医学认证标准。标准聚焦粤港澳大湾区，兼顾跨境服务与国际化需求，致力于为您打造卓越的服务品牌。</p>
+            <div class="btn-group">
+                <a href="apply.html" class="btn btn-primary" data-i18n="btn_apply">在线申请认证</a>
+                <a href="#download" class="btn btn-outline" data-i18n="btn_dl">下载资料文件</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="main-container">
+        <section id="intro">
+            <h2 class="section-title" data-i18n="sec_intro_title">APEX 国际基层医疗机构认证标准简介</h2>
+            <div class="intro-container">
+                <div class="intro-background">
+                    <h3 data-i18n="h_bg">认证背景</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-main); text-align: justify;" data-i18n="p_bg">为服务国家医改与医疗一体化战略，推动粤港澳大湾区医疗产业协同发展。针对跨境医疗在资源调配、服务标准、数据互通及商保支付等方面的痛点，GBA-FM-ARC 推出统一的认证体系，旨在破解基层品质提升痛点，承接金融健康险产品的协同需求，并满足国际人士和港澳台同胞对于高品质家庭医学服务的迫切渴望，为基层医疗服务质量提供国际背书。</p>
+                </div>
+                
+                <div class="intro-background" style="background-color: var(--bg-light); border-left-color: var(--accent-gold); margin-bottom: 2rem;">
+                    <h3 data-i18n="h_what">什么是 APEX 认证？</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-main); text-align: justify;" data-i18n="p_what">APEX（International Accreditation for Primary Care Excellence）是深圳市粤港澳大湾区联合家庭医学评审评价研究中心（GBA-FM-ARC）正式推出的国际化基层医疗/家庭医学认证标准。标准聚焦粤港澳大湾区，兼顾跨境服务与国际化需求，旨在建立国际化共识性框架，为医疗机构的建设、运营与评估提供全面指导。</p>
+                </div>
+
+                <div class="intro-grid">
+                    <div class="intro-card">
+                        <h3 data-i18n="h_goals">核心目标</h3>
+                        <ul>
+                            <li data-i18n="li_g1"><strong>短期目标：</strong>规范服务流程，保障安全与一致性。</li>
+                            <li data-i18n="li_g2"><strong>中期目标：</strong>优化效率与体验，促进跨境协作。</li>
+                            <li data-i18n="li_g3"><strong>长期目标：</strong>建立国际化家庭医学品牌，推动可复制模式。</li>
+                        </ul>
+                    </div>
+                    <div class="intro-card">
+                        <h3 data-i18n="h_target">适用对象</h3>
+                        <ul>
+                            <li data-i18n="li_t1">公立或民营医院家庭医学科 / 全科部门。</li>
+                            <li data-i18n="li_t2">社区卫生服务中心/站、乡镇卫生院。</li>
+                            <li data-i18n="li_t3">家庭医生/全科诊所（含合资、独资）。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dimensions">
+            <h2 class="section-title" data-i18n="sec_dim_title">30个评分维度全览</h2>
+            <div class="dimension-grid">
+                <div class="dimension-card dim-color-1">
+                    <h3 data-i18n="dim_1">（一）机构资质与管理</h3>
+                    <ul class="dimension-list">
+                        <li data-i18n="dim_1_1">1.1 基本资质</li>
+                        <li data-i18n="dim_1_2">1.2 组织架构</li>
+                        <li data-i18n="dim_1_3">1.3 功能区设置</li>
+                        <li data-i18n="dim_1_4">1.4 SOP体系</li>
+                    </ul>
+                </div>
+                <div class="dimension-card dim-color-2">
+                    <h3 data-i18n="dim_2">（二）人员资质与能力</h3>
+                    <ul class="dimension-list">
+                        <li data-i18n="dim_2_1">2.1 医生资质</li>
+                        <li data-i18n="dim_2_2">2.2 护士资质</li>
+                        <li data-i18n="dim_2_3">2.3 辅助人员资质</li>
+                        <li data-i18n="dim_2_4">2.4 语言与文化能力</li>
+                        <li data-i18n="dim_2_5">2.5 培训与发展体系</li>
+                        <li data-i18n="dim_2_6">2.6 团队配置</li>
+                        <li data-i18n="dim_2_7">2.7 医生临床服务能力</li>
+                        <li data-i18n="dim_2_8">2.8 护士临床服务能力</li>
+                        <li data-i18n="dim_2_9">2.9 员工保障与支持措施</li>
+                    </ul>
+                </div>
+                <div class="dimension-card dim-color-3">
+                    <h3 data-i18n="dim_3">（三）服务内容与流程</h3>
+                    <ul class="dimension-list">
+                        <li data-i18n="dim_3_1">3.1 核心服务</li>
+                        <li data-i18n="dim_3_2">3.2 线下服务流程</li>
+                        <li data-i18n="dim_3_3">3.3 线上服务流程（如适用）</li>
+                        <li data-i18n="dim_3_4">3.4 本地转诊网络</li>
+                        <li data-i18n="dim_3_5">3.5 支付方式</li>
+                        <li data-i18n="dim_3_6">3.6 跨境转诊协调</li>
+                    </ul>
+                </div>
+                <div class="dimension-card dim-color-4">
+                    <h3 data-i18n="dim_4">（四）患者安全与隐私</h3>
+                    <ul class="dimension-list">
+                        <li data-i18n="dim_4_1">4.1 患者身份识别</li>
+                        <li data-i18n="dim_4_2">4.2 用药安全流程</li>
+                        <li data-i18n="dim_4_3">4.3 感染控制</li>
+                        <li data-i18n="dim_4_4">4.4 隐私保护</li>
+                        <li data-i18n="dim_4_5">4.5 知情同意与共同决策</li>
+                    </ul>
+                </div>
+                <div class="dimension-card dim-color-5">
+                    <h3 data-i18n="dim_5">（五）数据与信息安全</h3>
+                    <ul class="dimension-list">
+                        <li data-i18n="dim_5_1">5.1 信息安全技术</li>
+                        <li data-i18n="dim_5_2">5.2 数据跨境合规（如适用）</li>
+                        <li data-i18n="dim_5_3">5.3 人工智能工具管理（如适用）</li>
+                    </ul>
+                </div>
+                <div class="dimension-card dim-color-6">
+                    <h3 data-i18n="dim_6">（六）质量控制与改进</h3>
+                    <ul class="dimension-list">
+                        <li data-i18n="dim_6_1">6.1 内部质控活动</li>
+                        <li data-i18n="dim_6_2">6.2 患者反馈与投诉管理</li>
+                        <li data-i18n="dim_6_3">6.3 质量改进案例</li>
+                    </ul>
+                </div>
+            </div>
+            <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem; text-align: center;" data-i18n="dim_note">*注：部分评审维度或不适用于某些机构，申请方应在申请阶段与 FMARC 确认不适用项目。</p>
+        </section>
+
+        <section id="rubric">
+            <h2 class="section-title" data-i18n="sec_rubric_title">APEX 评分准则 (0 - 5分制)</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 90px; text-align: center;" data-i18n="th_score">分值</th>
+                            <th style="width: 180px;" data-i18n="th_grade">评定等次</th>
+                            <th data-i18n="th_desc">具体衡量准则描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">5</span></td>
+                            <td><strong data-i18n="r_5_title">优秀</strong><span class="lang-en">Excellent</span></td>
+                            <td><span data-i18n="r_5_desc">完全符合或超出APEX标准要求。有完整、系统的证据支持，执行一致且有效。</span><span class="lang-en">Fully meets or exceeds APEX standard requirements. Supported by complete and systematic evidence, with consistent and effective execution.</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">4</span></td>
+                            <td><strong data-i18n="r_4_title">合格</strong><span class="lang-en">Pass</span></td>
+                            <td><span data-i18n="r_4_desc">基本符合标准要求，仅有个别次要方面有待完善。证据充分，执行有效。</span><span class="lang-en">Substantially meets standard requirements, with only minor areas needing refinement. Evidence is sufficient, and execution is effective.</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">3</span></td>
+                            <td><strong data-i18n="r_3_title">边缘合格</strong><span class="lang-en">Borderline Pass</span></td>
+                            <td><span data-i18n="r_3_desc">达到标准的基本要求，但存在一些需要改进的方面。有基本证据支持。</span><span class="lang-en">Meets the basic requirements of the standard but has some areas for improvement. Supported by fundamental evidence.</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">2</span></td>
+                            <td><strong data-i18n="r_2_title">边缘不合格</strong><span class="lang-en">Borderline Fail</span></td>
+                            <td><span data-i18n="r_2_desc">部分符合标准，但存在明显缺陷或系统性不足。证据不完整或执行不一致。</span><span class="lang-en">Partially meets the standard but exhibits noticeable shortcomings or systemic weaknesses. Evidence is incomplete or execution is inconsistent.</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">1</span></td>
+                            <td><strong data-i18n="r_1_title">不合格</strong><span class="lang-en">Fail</span></td>
+                            <td><span data-i18n="r_1_desc">与标准要求有较大差距，仅具备雏形或计划。缺乏有效执行证据。</span><span class="lang-en">Shows significant gaps compared to standard requirements, only in preliminary or planning stages. Lacks evidence of effective execution.</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;"><span class="score-badge">0</span></td>
+                            <td><strong data-i18n="r_0_title">严重缺陷</strong><span class="lang-en">Serious Deficient</span></td>
+                            <td><span data-i18n="r_0_desc">未达到标准要求，或该项内容完全缺失。</span><span class="lang-en">Does not meet standard requirements, or the item is entirely absent.</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="levels">
+            <h2 class="section-title" data-i18n="sec_level_title">APEX 评审结果、等级与升级机制</h2>
+            <div class="level-upgrade-box">
+                <h3 style="color: var(--primary-blue); margin-bottom: 1rem; font-size: 1.3rem;" data-i18n="h_result">评审结果和等级</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;" data-i18n="p_result">机构的最终得分经专家组加权计算后，认证等级及评审结果划分为以下级别。顺利通过认证的机构将获颁正式认证证书，有效期为 4 年：</p>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 250px;" data-i18n="th_l_res">评审结果和等级</th>
+                                <th style="text-align: center; width: 160px;" data-i18n="th_l_score">整体分数线</th>
+                                <th data-i18n="th_l_desc">分数释义</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong data-i18n="l_a">A级（甲级）</strong></td>
+                                <td style="text-align: center; font-weight: bold; color: var(--primary-blue);">&ge; 80%</td>
+                                <td data-i18n="l_a_desc">整体分数达到80% 或以上</td>
+                            </tr>
+                            <tr>
+                                <td><strong data-i18n="l_b">B级（乙级）</strong></td>
+                                <td style="text-align: center; font-weight: bold;">70% - 79%</td>
+                                <td data-i18n="l_b_desc">整体分数为70% - 79%</td>
+                            </tr>
+                            <tr>
+                                <td><strong data-i18n="l_c">C级（丙级）</strong></td>
+                                <td style="text-align: center; font-weight: bold;">60% - 69%</td>
+                                <td data-i18n="l_c_desc">整体分数为60% - 69%</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: var(--danger-color);" data-i18n="l_f">不合格</strong></td>
+                                <td style="text-align: center; font-weight: bold; color: var(--danger-color);">&lt; 60%</td>
+                                <td data-i18n="l_f_desc">整体分数低于60%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="upgrade-section">
+                    <h3 data-i18n="h_upgrade">等级升级</h3>
+                    <p data-i18n="p_up1">在4年认证有效期内，获得B级/C级认证的机构，在根据认证报告建议完成相关整改后，可向FMARC提出“升级申请”。</p>
+                    <p data-i18n="p_up2">被受理后，申请方需要完成简化评估，以检验其符合更高等级的有效性。成功通过可授予新认证证书，但不改变原证书的有效期。</p>
+                    <p style="font-weight: 600; margin-bottom: 0; color: #b45309;" data-i18n="p_up3">因涉及额外认证工作所产生的额外费用（如人工成本），需由申请方承担。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="process">
+            <h2 class="section-title" data-i18n="sec_process_title">APEX 正式认证流程</h2>
+            <div class="circle-process-container">
+                <div class="process-circle-item">
+                    <div class="circle-num">1</div>
+                    <div class="circle-title" data-i18n="p1_t">申请咨询</div>
+                    <div class="circle-desc" data-i18n="p1_d">向 FMARC 表达认证意向，确认申请资格、申请费用等。FMARC 提供认证前咨询服务。</div>
+                </div>
+                <div class="process-circle-item">
+                    <div class="circle-num">2</div>
+                    <div class="circle-title" data-i18n="p2_t">提交申请</div>
+                    <div class="circle-desc" data-i18n="p2_d">完成《评审认证申请表》并按要求提供相关佐证材料，在指定时间内提交所有文件。</div>
+                </div>
+                <div class="process-circle-item">
+                    <div class="circle-num">3</div>
+                    <div class="circle-title" data-i18n="p3_t">文件初审</div>
+                    <div class="circle-desc" data-i18n="p3_d">FMARC 秘书处对材料进行初审，确认后发出具体认证时间、现场评审日期、《受理通知》和费用发票。</div>
+                </div>
+                <div class="process-circle-item">
+                    <div class="circle-num">4</div>
+                    <div class="circle-title" data-i18n="p4_t">签约缴费</div>
+                    <div class="circle-desc" data-i18n="p4_d">双方确认认证安排，签订认证合作协议（如需），申请方在指定时间缴付认证费用。</div>
+                </div>
+                <div class="process-circle-item">
+                    <div class="circle-num">5</div>
+                    <div class="circle-title" data-i18n="p5_t">文件审核</div>
+                    <div class="circle-desc" data-i18n="p5_d">FMARC 标准委员会评审专家将对材料进行全面评估（约2-3个月），必要时要求补充书面材料或进行线上会议厘清。</div>
+                </div>
+                <div class="process-circle-item">
+                    <div class="circle-num">6</div>
+                    <div class="circle-title" data-i18n="p6_t">现场评估</div>
+                    <div class="circle-desc" data-i18n="p6_d">FMARC 专家到访现场进行评审（一般为期 2-3 天），流程包括现场参观、观察服务流程、与管理层/医护人员/患者访谈等。</div>
+                </div>
+                <div class="process-circle-item">
+                    <div class="circle-num">7</div>
+                    <div class="circle-title" data-i18n="p7_t">结果公布</div>
+                    <div class="circle-desc" data-i18n="p7_d">最终认证报告提交委员会终审。顺利通过换发证书（有效期4年），机构进入持续质控与再认证的闭环提升轨道。</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fees">
+            <h2 class="section-title" data-i18n="sec_fee_title">认证收费</h2>
+            <div class="fee-box">
+                <p style="font-size: 1.1rem; color: var(--text-main);" data-i18n="fee_base">基础认证费用</p>
+                <div class="fee-price">35,000 <span><span data-i18n="fee_unit">元</span> +</span></div>
+                <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto;" data-i18n="fee_note">
+                    最终费用视乎机构规模大小或有调整。具体详情请联系 FMARC 秘书处了解更多。
+                </p>
+            </div>
+        </section>
+
+        <section id="download">
+            <h2 class="section-title" data-i18n="sec_dl_title">资料下载与申请入口</h2>
+            <div class="download-panel">
+                <div class="download-links-grid">
+                    <a href="#" class="btn-file">📄 <span data-i18n="dl_1">点击下载《APEX 国际基层医疗机构认证标准》</span></a>
+                    <a href="#" class="btn-file">📄 <span data-i18n="dl_2">点击下载《APEX 国际基层医疗机构认证 - 评审认证申请表》</span></a>
+                    <a href="#" class="btn-file">📄 <span data-i18n="dl_3">点击下载《APEX 国际基层医疗机构认证 - 申请表填写指引》</span></a>
+                </div>
+                <div class="online-portal">
+                    <a href="apply.html" class="btn btn-primary btn-large" data-i18n="btn_sys">进入 APEX 在线认证申请系统</a>
+                    <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 12px;" data-i18n="sys_note">* 系统支持在线填写基础信息、指定对接人、批量上传佐证材料电子版并跟踪初审状态</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="registry">
+            <h2 class="section-title" data-i18n="sec_reg_title">已获认证机构名录 (官方实时公示)</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-i18n="th_r_name">机构名称</th>
+                            <th style="width: 160px;" data-i18n="th_r_date">首次获证日期</th>
+                            <th style="width: 150px;" data-i18n="th_r_level">认证级别</th>
+                            <th style="width: 200px;" data-i18n="th_r_status">证书状态 / 有效期至</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong data-i18n="org_1">深圳市宝安区中心医院港澳居民健康服务中心</strong></td>
+                            <td data-i18n="date_1">2023年11月</td>
+                            <td><span style="color: var(--primary-blue); font-weight: 600;">Excellent</span></td>
+                            <td><span class="status-dot" data-i18n="stat_1">有效期内 (2027年11月)</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong data-i18n="org_2">深圳市宝安区人民医院港澳居民健康服务中心</strong></td>
+                            <td data-i18n="date_2">2024年03月</td>
+                            <td><span style="color: var(--primary-blue); font-weight: 600;">Excellent</span></td>
+                            <td><span class="status-dot" data-i18n="stat_2">有效期内 (2028年03月)</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong data-i18n="org_3">大湾区全科金牌社康诊室（首批试点示范网点区域）</strong></td>
+                            <td data-i18n="date_3">2025年</td>
+                            <td><span style="color: var(--primary-blue); font-weight: 600;">Good</span></td>
+                            <td><span class="status-dot" data-i18n="stat_3">有效期内 (2029年)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="hero-container">
+            <h2 data-i18n="ft_name_cn">深圳市粤港澳大湾区联合家庭医学评审评价研究中心 (GBA-FM-ARC)</h2>
+            <p>The GBA Family Medicine Accreditation & Research Center (Shenzhen)</p>
+            <p style="margin-top: 1.5rem; font-size: 0.85rem; opacity: 0.5;">&copy; 2026 GBA-FM-ARC. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const i18n_dict = {
+            'zh-CN': {
+                'nav_logo': 'GBA-FM-ARC | APEX 认证体系', 'nav_intro': '标准简介', 'nav_dim': '评分维度', 'nav_rubric': '评分准则', 'nav_level': '级别与升级', 'nav_process': '认证流程', 'nav_fee': '认证收费', 'nav_reg': '获证名录',
+                'hero_title': '引领湾区家庭医学新标杆', 'hero_desc': 'APEX (International Accreditation for Primary Care Excellence) 是国际化的基层医疗与家庭医学认证标准。标准聚焦粤港澳大湾区，兼顾跨境服务与国际化需求，致力于为您打造卓越的服务品牌。', 'btn_apply': '在线申请认证', 'btn_dl': '下载资料文件',
+                'sec_intro_title': 'APEX 国际基层医疗机构认证标准简介', 'h_bg': '认证背景', 'p_bg': '为服务国家医改与医疗一体化战略，推动粤港澳大湾区医疗产业协同发展。针对跨境医疗在资源调配、服务标准、数据互通及商保支付等方面的痛点，GBA-FM-ARC 推出统一的认证体系，旨在破解基层品质提升痛点，承接金融健康险产品的协同需求，并满足国际人士和港澳台同胞对于高品质家庭医学服务的迫切渴望，为基层医疗服务质量提供国际背书。', 'h_what': '什么是 APEX 认证？', 'p_what': 'APEX（International Accreditation for Primary Care Excellence）是深圳市粤港澳大湾区联合家庭医学评审评价研究中心（GBA-FM-ARC）正式推出的国际化基层医疗/家庭医学认证标准。标准聚焦粤港澳大湾区，兼顾跨境服务与国际化需求，旨在建立国际化共识性框架，为医疗机构的建设、运营与评估提供全面指导。',
+                'h_goals': '核心目标', 'li_g1': '<strong>短期目标：</strong>规范服务流程，保障安全与一致性。', 'li_g2': '<strong>中期目标：</strong>优化效率与体验，促进跨境协作。', 'li_g3': '<strong>长期目标：</strong>建立国际化家庭医学品牌，推动可复制模式。',
+                'h_target': '适用对象', 'li_t1': '公立或民营医院家庭医学科 / 全科部门。', 'li_t2': '社区卫生服务中心/站、乡镇卫生院。', 'li_t3': '家庭医生/全科诊所（含合资、独资）。',
+                'sec_dim_title': '30个评分维度全览', 'dim_1': '（一）机构资质与管理', 'dim_1_1': '1.1 基本资质', 'dim_1_2': '1.2 组织架构', 'dim_1_3': '1.3 功能区设置', 'dim_1_4': '1.4 SOP体系',
+                'dim_2': '（二）人员资质与能力', 'dim_2_1': '2.1 医生资质', 'dim_2_2': '2.2 护士资质', 'dim_2_3': '2.3 辅助人员资质', 'dim_2_4': '2.4 语言与文化能力', 'dim_2_5': '2.5 培训与发展体系', 'dim_2_6': '2.6 团队配置', 'dim_2_7': '2.7 医生临床服务能力', 'dim_2_8': '2.8 护士临床服务能力', 'dim_2_9': '2.9 员工保障与支持措施',
+                'dim_3': '（三）服务内容与流程', 'dim_3_1': '3.1 核心服务', 'dim_3_2': '3.2 线下服务流程', 'dim_3_3': '3.3 线上服务流程（如适用）', 'dim_3_4': '3.4 本地转诊网络', 'dim_3_5': '3.5 支付方式', 'dim_3_6': '3.6 跨境转诊协调',
+                'dim_4': '（四）患者安全与隐私', 'dim_4_1': '4.1 患者身份识别', 'dim_4_2': '4.2 用药安全流程', 'dim_4_3': '4.3 感染控制', 'dim_4_4': '4.4 隐私保护', 'dim_4_5': '4.5 知情同意与共同决策',
+                'dim_5': '（五）数据与信息安全', 'dim_5_1': '5.1 信息安全技术', 'dim_5_2': '5.2 数据跨境合规（如适用）', 'dim_5_3': '5.3 人工智能工具管理（如适用）',
+                'dim_6': '（六）质量控制与改进', 'dim_6_1': '6.1 内部质控活动', 'dim_6_2': '6.2 患者反馈与投诉管理', 'dim_6_3': '6.3 质量改进案例', 'dim_note': '*注：部分评审维度或不适用于某些机构，申请方应在申请阶段与 FMARC 确认不适用项目。',
+                'sec_rubric_title': 'APEX 评分准则 (0 - 5分制)', 'th_score': '分值', 'th_grade': '评定等次', 'th_desc': '具体衡量准则描述',
+                'r_5_title': '优秀', 'r_5_desc': '完全符合或超出APEX标准要求。有完整、系统的证据支持，执行一致且有效。', 'r_4_title': '合格', 'r_4_desc': '基本符合标准要求，仅有个别次要方面有待完善。证据充分，执行有效。', 'r_3_title': '边缘合格', 'r_3_desc': '达到标准的基本要求，但存在一些需要改进的方面。有基本证据支持。', 'r_2_title': '边缘不合格', 'r_2_desc': '部分符合标准，但存在明显缺陷或系统性不足。证据不完整或执行不一致。', 'r_1_title': '不合格', 'r_1_desc': '与标准要求有较大差距，仅具备雏形或计划。缺乏有效执行证据。', 'r_0_title': '严重缺陷', 'r_0_desc': '未达到标准要求，或该项内容完全缺失。',
+                'sec_level_title': 'APEX 评审结果、等级与升级机制', 'h_result': '评审结果和等级', 'p_result': '机构的最终得分经专家组加权计算后，认证等级及评审结果划分为以下级别。顺利通过认证的机构将获颁正式认证证书，有效期为 4 年：',
+                'th_l_res': '评审结果和等级', 'th_l_score': '整体分数线', 'th_l_desc': '分数释义',
+                'l_a': 'A级（甲级）', 'l_a_desc': '整体分数达到80% 或以上', 'l_b': 'B级（乙级）', 'l_b_desc': '整体分数为70% - 79%', 'l_c': 'C级（丙级）', 'l_c_desc': '整体分数为60% - 69%', 'l_f': '不合格', 'l_f_desc': '整体分数低于60%',
+                'h_upgrade': '等级升级', 'p_up1': '在4年认证有效期内，获得B级/C级认证的机构，在根据认证报告建议完成相关整改后，可向FMARC提出“升级申请”。', 'p_up2': '被受理后，申请方需要完成简化评估，以检验其符合更高等级的有效性。成功通过可授予新认证证书，但不改变原证书的有效期。', 'p_up3': '因涉及额外认证工作所产生的额外费用（如人工成本），需由申请方承担。',
+                'sec_process_title': 'APEX 正式认证流程', 'p1_t': '申请咨询', 'p1_d': '向 FMARC 表达认证意向，确认申请资格、申请费用等。FMARC 提供认证前咨询服务。', 'p2_t': '提交申请', 'p2_d': '完成《评审认证申请表》并按要求提供相关佐证材料，在指定时间内提交所有文件。', 'p3_t': '文件初审', 'p3_d': 'FMARC 秘书处对材料进行初审，确认后发出具体认证时间、现场评审日期、《受理通知》和费用发票。', 'p4_t': '签约缴费', 'p4_d': '双方确认认证安排，签订认证合作协议（如需），申请方在指定时间缴付认证费用。', 'p5_t': '文件审核', 'p5_d': 'FMARC 标准委员会评审专家将对材料进行全面评估（约2-3个月），必要时要求补充书面材料或进行线上会议厘清。', 'p6_t': '现场评估', 'p6_d': 'FMARC 专家到访现场进行评审（一般为期 2-3 天），流程包括现场参观、观察服务流程、与管理层/医护人员/患者访谈等。', 'p7_t': '结果公布', 'p7_d': '最终认证报告提交委员会终审。顺利通过换发证书（有效期4年），机构进入持续质控与再认证的闭环提升轨道。',
+                'sec_fee_title': '认证收费', 'fee_base': '基础认证费用', 'fee_unit': '元', 'fee_note': '最终费用视乎机构规模大小或有调整。具体详情请联系 FMARC 秘书处了解更多。',
+                'sec_dl_title': '资料下载与申请入口', 'dl_1': '点击下载《APEX 国际基层医疗机构认证标准》', 'dl_2': '点击下载《APEX 国际基层医疗机构认证 - 评审认证申请表》', 'dl_3': '点击下载《APEX 国际基层医疗机构认证 - 申请表填写指引》', 'btn_sys': '进入 APEX 在线认证申请系统', 'sys_note': '* 系统支持在线填写基础信息、指定对接人、批量上传佐证材料电子版并跟踪初审状态',
+                'sec_reg_title': '已获认证机构名录 (官方实时公示)', 'th_r_name': '机构名称', 'th_r_date': '首次获证日期', 'th_r_level': '认证级别', 'th_r_status': '证书状态 / 有效期至',
+                'org_1': '深圳市宝安区中心医院港澳居民健康服务中心', 'date_1': '2023年11月', 'stat_1': '有效期内 (2027年11月)', 'org_2': '深圳市宝安区人民医院港澳居民健康服务中心', 'date_2': '2024年03月', 'stat_2': '有效期内 (2028年03月)', 'org_3': '大湾区全科金牌社康诊室（首批试点示范网点区域）', 'date_3': '2025年', 'stat_3': '有效期内 (2029年)', 'ft_name_cn': '深圳市粤港澳大湾区联合家庭医学评审评价研究中心 (GBA-FM-ARC)'
+            },
+            'zh-TW': {
+                'nav_logo': 'GBA-FM-ARC | APEX 認證體系', 'nav_intro': '標準簡介', 'nav_dim': '評分維度', 'nav_rubric': '評分準則', 'nav_level': '級別與升級', 'nav_process': '認證流程', 'nav_fee': '認證收費', 'nav_reg': '獲證名錄',
+                'hero_title': '引領灣區家庭醫學新標杆', 'hero_desc': 'APEX (International Accreditation for Primary Care Excellence) 是國際化的基層醫療與家庭醫學認證標準。標準聚焦粵港澳大灣區，兼顧跨境服務與國際化需求，致力於為您打造卓越的服務品牌。', 'btn_apply': '在線申請認證', 'btn_dl': '下載資料文件',
+                'sec_intro_title': 'APEX 國際基層醫療機構認證標準簡介', 'h_bg': '認證背景', 'p_bg': '為服務國家醫改與醫療一體化戰略，推動粵港澳大灣區醫療產業協同發展。針對跨境醫療在資源調配、服務標準、數據互通及商保支付等方面的痛點，GBA-FM-ARC 推出統一的認證體系，旨在破解基層品質提升痛點，承接金融健康險產品的協同需求，並滿足國際人士和港澳台同胞對於高品質家庭醫學服務的迫切渴望，為基層醫療服務質量提供國際背書。', 'h_what': '什麼是 APEX 認證？', 'p_what': 'APEX（International Accreditation for Primary Care Excellence）是深圳市粵港澳大灣區聯合家庭醫學評審評價研究中心（GBA-FM-ARC）正式推出的國際化基層醫療/家庭醫學認證標準。標準聚焦粵港澳大灣區，兼顧跨境服務與國際化需求，旨在建立國際化共識性框架，為醫療機構的建設、運營與評估提供全面指導。',
+                'h_goals': '核心目標', 'li_g1': '<strong>短期目標：</strong>規範服務流程，保障安全與一致性。', 'li_g2': '<strong>中期目標：</strong>優化效率與體驗，促進跨境協作。', 'li_g3': '<strong>長期目標：</strong>建立國際化家庭醫學品牌，推動可複製模式。',
+                'h_target': '適用對象', 'li_t1': '公立或民營醫院家庭醫學科 / 全科部門。', 'li_t2': '社區衛生服務中心/站、鄉鎮衛生院。', 'li_t3': '家庭醫生/全科診所（含合資、獨資）。',
+                'sec_dim_title': '30個評分維度全覽', 'dim_1': '（一）機構資質與管理', 'dim_1_1': '1.1 基本資質', 'dim_1_2': '1.2 組織架構', 'dim_1_3': '1.3 功能區設置', 'dim_1_4': '1.4 SOP體系',
+                'dim_2': '（二）人員資質與能力', 'dim_2_1': '2.1 醫生資質', 'dim_2_2': '2.2 護士資質', 'dim_2_3': '2.3 輔助人員資質', 'dim_2_4': '2.4 語言與文化能力', 'dim_2_5': '2.5 培訓與發展體系', 'dim_2_6': '2.6 團隊配置', 'dim_2_7': '2.7 醫生臨床服務能力', 'dim_2_8': '2.8 護士臨床服務能力', 'dim_2_9': '2.9 員工保障與支持措施',
+                'dim_3': '（三）服務內容與流程', 'dim_3_1': '3.1 核心服務', 'dim_3_2': '3.2 線下服務流程', 'dim_3_3': '3.3 線上服務流程（如適用）', 'dim_3_4': '3.4 本地轉診網絡', 'dim_3_5': '3.5 支付方式', 'dim_3_6': '3.6 跨境轉診協調',
+                'dim_4': '（四）患者安全與隱私', 'dim_4_1': '4.1 患者身份識別', 'dim_4_2': '4.2 用藥安全流程', 'dim_4_3': '4.3 感染控制', 'dim_4_4': '4.4 隱私保護', 'dim_4_5': '4.5 知情同意與共同決策',
+                'dim_5': '（五）數據與信息安全', 'dim_5_1': '5.1 信息安全技術', 'dim_5_2': '5.2 數據跨境合規（如適用）', 'dim_5_3': '5.3 人工智能工具管理（如適用）',
+                'dim_6': '（六）質量控制與改進', 'dim_6_1': '6.1 內部質控活動', 'dim_6_2': '6.2 患者反饋與投訴管理', 'dim_6_3': '6.3 質量改進案例', 'dim_note': '*註：部分評審維度或不適用於某些機構，申請方應在申請階段與 FMARC 確認不適用項目。',
+                'sec_rubric_title': 'APEX 評分準則 (0 - 5分制)', 'th_score': '分值', 'th_grade': '評定等次', 'th_desc': '具體衡量準則描述',
+                'r_5_title': '優秀', 'r_5_desc': '完全符合或超出APEX標準要求。有完整、系統的證據支持，執行一致且有效。', 'r_4_title': '合格', 'r_4_desc': '基本符合標準要求，僅有個別次要方面有待完善。證據充分，執行有效。', 'r_3_title': '邊緣合格', 'r_3_desc': '達到標準的基本要求，但存在一些需要改進的方面。有基本證據支持。', 'r_2_title': '邊緣不合格', 'r_2_desc': '部分符合標準，但存在明顯缺陷或系統性不足。證據不完整或執行不一致。', 'r_1_title': '不合格', 'r_1_desc': '與標準要求有較大差距，僅具備雛形或計劃。缺乏有效執行證據。', 'r_0_title': '嚴重缺陷', 'r_0_desc': '未達到標準要求，或該項內容完全缺失。',
+                'sec_level_title': 'APEX 評審結果、等級與升級機制', 'h_result': '評審結果和等級', 'p_result': '機構的最終得分經專家組加權計算後，認證等級及評審結果劃分為以下級別。順利通過認證的機構將獲頒正式認證證書，有效期為 4 年：',
+                'th_l_res': '評審結果和等級', 'th_l_score': '整體分數線', 'th_l_desc': '分數釋義',
+                'l_a': 'A級（甲級）', 'l_a_desc': '整體分數達到80% 或以上', 'l_b': 'B級（乙級）', 'l_b_desc': '整體分數為70% - 79%', 'l_c': 'C級（丙级）', 'l_c_desc': '整體分數為60% - 69%', 'l_f': '不合格', 'l_f_desc': '整體分數低於60%',
+                'h_upgrade': '等級升級', 'p_up1': '在4年認證有效期內，獲得B級/C級認證的機構，在根據認證報告建議完成相關整改後，可向FMARC提出“升級申請”。', 'p_up2': '被受理後，申請方需要完成簡化評估，以檢驗其符合更高等級的有效性。成功通過可授予新認證證書，但不改變原證書的有效期。', 'p_up3': '因涉及額外認證工作所產生的額外費用（如人工成本），需由申請方承擔。',
+                'sec_process_title': 'APEX 正式認證流程', 'p1_t': '申請諮詢', 'p1_d': '向 FMARC 表達認證意向，確認申請資格、申請費用等。FMARC 提供認證前諮詢服務。', 'p2_t': '提交申請', 'p2_d': '完成《評審認證申請表》並按要求提供相關佐證材料，在指定時間內提交所有文件。', 'p3_t': '文件初審', 'p3_d': 'FMARC 秘書處對材料進行初審，確認後發出具體認證時間、現場評審日期、《受理通知》和費用發票。', 'p4_t': '簽約繳費', 'p4_d': '雙方確認認證安排，簽訂認證合作協議（如需），申請方在指定時間繳付認證費用。', 'p5_t': '文件審核', 'p5_d': 'FMARC 標準委員會評審專家將對材料進行全面評估（約2-3個月），必要時要求補充書面材料或進行線上會議釐清。', 'p6_t': '現場評估', 'p6_d': 'FMARC 專家到訪現場進行評審（一般為期 2-3 天），流程包括現場參觀、觀察服務流程、與管理層/醫護人員/患者訪談等。', 'p7_t': '結果公佈', 'p7_d': '最終認證報告提交委員會終審。順利通過換發證書（有效期4年），機構進入持續質控與再認證的閉環提升軌道。',
+                'sec_fee_title': '認證收費', 'fee_base': '基礎認證費用', 'fee_unit': '元', 'fee_note': '最終費用視乎機構規模大小或有調整。具體詳情請聯繫 FMARC 秘書處了解更多。',
+                'sec_dl_title': '資料下載與申請入口', 'dl_1': '點擊下載《APEX 國際基層醫療機構認證標準》', 'dl_2': '點擊下載《APEX 國際基層醫療機構認證 - 評審認證申請表》', 'dl_3': '點擊下載《APEX 國際基層醫療機構認證 - 申請表填寫指引》', 'btn_sys': '進入 APEX 在線認證申請系統', 'sys_note': '* 系統支持在線填寫基礎信息、指定對接人、批量上傳佐證材料電子版並跟蹤初審狀態',
+                'sec_reg_title': '已獲認證機構名錄 (官方實時公示)', 'th_r_name': '機構名稱', 'th_r_date': '首次獲證日期', 'th_r_level': '認證級別', 'th_r_status': '證書狀態 / 有效期至',
+                'org_1': '深圳市寶安區中心醫院港澳居民健康服務中心', 'date_1': '2023年11月', 'stat_1': '有效期內 (2027年11月)', 'org_2': '深圳市寶安區人民醫院港澳居民健康服務中心', 'date_2': '2024年03月', 'stat_2': '有效期內 (2028年03月)', 'org_3': '大灣區全科金牌社康診室（首批試點示範網點區域）', 'date_3': '2025年', 'stat_3': '有效期內 (2029年)', 'ft_name_cn': '深圳市粵港澳大灣區聯合家庭醫學評審評價研究中心 (GBA-FM-ARC)'
+            },
+            'en': {
+                'nav_logo': 'GBA-FM-ARC | APEX Accreditation', 'nav_intro': 'Introduction', 'nav_dim': 'Dimensions', 'nav_rubric': 'Scoring Rubric', 'nav_level': 'Grades & Upgrade', 'nav_process': 'Process', 'nav_fee': 'Fees', 'nav_reg': 'Accredited Centers',
+                'hero_title': 'Leading the New Standard for GBA Primary Care', 'hero_desc': 'APEX (International Accreditation for Primary Care Excellence) is a global standard for primary care and family medicine. Focusing on the Greater Bay Area, it bridges cross-border services with international demands to build your center of excellence.', 'btn_apply': 'Apply Online', 'btn_dl': 'Download Forms',
+                'sec_intro_title': 'Introduction to APEX Accreditation', 'h_bg': 'Background', 'p_bg': 'To serve national healthcare reform and integration strategies, and to promote collaborative development in the GBA healthcare industry. Addressing cross-border challenges in resource allocation, service standards, and insurance direct-billing, FMARC launched this unified accreditation to solve primary care quality pain points and provide international endorsement.', 'h_what': 'What is APEX?', 'p_what': 'APEX is officially launched by the GBA Family Medicine Accreditation & Research Center (Shenzhen). It establishes an internationally recognized consensus framework to provide comprehensive guidance for the construction, operation, and evaluation of healthcare institutions.',
+                'h_goals': 'Core Goals', 'li_g1': '<strong>Short-term:</strong> Standardize workflows to ensure safety and consistency.', 'li_g2': '<strong>Medium-term:</strong> Optimize efficiency and patient experience; promote cross-border synergy.', 'li_g3': '<strong>Long-term:</strong> Build an international family medicine brand and a replicable model.',
+                'h_target': 'Target Institutions', 'li_t1': 'Family Medicine / General Practice Depts in Public/Private Hospitals.', 'li_t2': 'Community Health Centers / Township Health Centers.', 'li_t3': 'Family Doctor / GP Clinics (Joint Ventures or Solely Owned).',
+                'sec_dim_title': 'Overview of the 30 Evaluation Dimensions', 'dim_1': 'I. Institution Qualification & Mgmt', 'dim_1_1': '1.1 Basic Qualifications', 'dim_1_2': '1.2 Organizational Structure', 'dim_1_3': '1.3 Functional Zones', 'dim_1_4': '1.4 SOP Systems',
+                'dim_2': 'II. Personnel Qualifications & Capability', 'dim_2_1': '2.1 Doctor Qualifications', 'dim_2_2': '2.2 Nurse Qualifications', 'dim_2_3': '2.3 Allied Health Qualifications', 'dim_2_4': '2.4 Language & Culture Competency', 'dim_2_5': '2.5 Training & CPD', 'dim_2_6': '2.6 Team Configuration', 'dim_2_7': '2.7 GP Clinical Capability', 'dim_2_8': '2.8 Nurse Clinical Capability', 'dim_2_9': '2.9 Staff Support & Safety',
+                'dim_3': 'III. Service Content & Workflows', 'dim_3_1': '3.1 Core Services', 'dim_3_2': '3.2 Offline Workflows', 'dim_3_3': '3.3 Online Workflows (If any)', 'dim_3_4': '3.4 Local Referral Network', 'dim_3_5': '3.5 Payment Methods', 'dim_3_6': '3.6 Cross-border Coordination',
+                'dim_4': 'IV. Patient Safety & Privacy', 'dim_4_1': '4.1 Patient Identification', 'dim_4_2': '4.2 Medication Safety', 'dim_4_3': '4.3 Infection Control', 'dim_4_4': '4.4 Privacy Protection', 'dim_4_5': '4.5 Informed Consent & Shared Decision',
+                'dim_5': 'V. Data & Info Security', 'dim_5_1': '5.1 Info Security Tech', 'dim_5_2': '5.2 Cross-border Data Compliance', 'dim_5_3': '5.3 AI Tools Management',
+                'dim_6': 'VI. Quality Control & Improvement', 'dim_6_1': '6.1 Internal QC Activities', 'dim_6_2': '6.2 Patient Feedback & Complaints', 'dim_6_3': '6.3 Quality Improvement Cases', 'dim_note': '*Note: Certain dimensions may not apply to specific institutions. Please confirm exemptions with FMARC during application.',
+                'sec_rubric_title': 'APEX Scoring Rubric (0 - 5 Scale)', 'th_score': 'Score', 'th_grade': 'Grade', 'th_desc': 'Detailed Measurement Criteria',
+                'r_5_title': 'Excellent', 'r_5_desc': 'Fully meets or exceeds APEX standard requirements. Supported by complete and systematic evidence, with consistent and effective execution.', 'r_4_title': 'Pass', 'r_4_desc': 'Substantially meets standard requirements, with only minor areas needing refinement. Evidence is sufficient, and execution is effective.', 'r_3_title': 'Borderline Pass', 'r_3_desc': 'Meets the basic requirements of the standard but has some areas for improvement. Supported by fundamental evidence.', 'r_2_title': 'Borderline Fail', 'r_2_desc': 'Partially meets the standard but exhibits noticeable shortcomings or systemic weaknesses. Evidence is incomplete or execution is inconsistent.', 'r_1_title': 'Fail', 'r_1_desc': 'Shows significant gaps compared to standard requirements, only in preliminary or planning stages. Lacks evidence of effective execution.', 'r_0_title': 'Serious Deficient', 'r_0_desc': 'Does not meet standard requirements, or the item is entirely absent.',
+                'sec_level_title': 'APEX Results, Grades & Upgrade Mechanism', 'h_result': 'Review Results & Grades', 'p_result': 'After expert weighting, the final score determines the accreditation grade. Successfully accredited institutions will receive a certificate valid for 4 years:',
+                'th_l_res': 'Grade', 'th_l_score': 'Score Threshold', 'th_l_desc': 'Score Interpretation',
+                'l_a': 'Grade A (Excellent)', 'l_a_desc': 'Overall score of 80% or above', 'l_b': 'Grade B (Good)', 'l_b_desc': 'Overall score between 70% and 79%', 'l_c': 'Grade C (Satisfactory)', 'l_c_desc': 'Overall score between 60% and 69%', 'l_f': 'Fail', 'l_f_desc': 'Overall score below 60%',
+                'h_upgrade': 'Grade Upgrade Mechanism', 'p_up1': 'Within the 4-year validity period, B/C graded institutions may submit an "Upgrade Application" after completing rectifications based on the review report.', 'p_up2': 'Once accepted, a simplified evaluation will verify their eligibility for a higher grade. Success grants a new certificate without extending the original 4-year validity.', 'p_up3': 'Any extra costs incurred by the additional evaluation (e.g., labor costs) must be borne by the applicant.',
+                'sec_process_title': 'APEX Official Accreditation Process', 'p1_t': 'Consultation', 'p1_d': 'Express intent to FMARC, confirm eligibility and fees. FMARC provides pre-consultation.', 'p2_t': 'Application', 'p2_d': 'Submit the Application Form and required evidence within the specified timeframe.', 'p3_t': 'Initial Audit', 'p3_d': 'FMARC Secretariat conducts a preliminary review and issues the Acceptance Notice and invoice.', 'p4_t': 'Payment', 'p4_d': 'Sign agreements (if needed) and pay the accreditation fee.', 'p5_t': 'Document Audit', 'p5_d': 'FMARC experts conduct a comprehensive desktop review (approx. 2-3 months).', 'p6_t': 'On-site Eval', 'p6_d': 'FMARC experts visit the site (2-3 days) for tours, workflow observation, and interviews.', 'p7_t': 'Result & CQI', 'p7_d': 'Final report goes to the committee. Passing grants a 4-year certificate and enters the CQI loop.',
+                'sec_fee_title': 'Accreditation Fees', 'fee_base': 'Base Accreditation Fee', 'fee_unit': 'RMB', 'fee_note': 'Final fees may be adjusted based on the scale of the institution. Contact FMARC Secretariat for details.',
+                'sec_dl_title': 'Downloads & Application Portal', 'dl_1': 'Download "APEX International Primary Care Accreditation Standards"', 'dl_2': 'Download "APEX Accreditation Application Form"', 'dl_3': 'Download "APEX Application Form Filling Guide"', 'btn_sys': 'Access APEX Online Portal', 'sys_note': '* The portal supports online form filling, batch evidence uploads, and real-time initial audit tracking.',
+                'sec_reg_title': 'Accredited Institutions Registry (Live)', 'th_r_name': 'Institution Name', 'th_r_date': 'Initial Date', 'th_r_level': 'Grade', 'th_r_status': 'Status / Valid Until',
+                'org_1': 'Baoan District Central Hospital HK & Macau Residents Health Service Center', 'date_1': 'Nov 2023', 'stat_1': 'Active (Nov 2027)', 'org_2': 'Baoan District People\'s Hospital HK & Macau Residents Health Service Center', 'date_2': 'Mar 2024', 'stat_2': 'Active (Mar 2028)', 'org_3': 'GBA Gold Family Doctor Clinic (Pilot Demonstration Site)', 'date_3': '2025', 'stat_3': 'Active (2029)', 'ft_name_cn': 'The GBA Family Medicine Accreditation & Research Center (Shenzhen)'
+            }
+        };
+
+        // 语言引擎执行函数
+        function executeLanguageSwitch(langCode) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n_dict[langCode] && i18n_dict[langCode][key]) {
+                    el.innerHTML = i18n_dict[langCode][key];
+                }
+            });
+        }
+
+        // 移动端汉堡菜单响应控制
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('mobile-menu');
+            const navLinks = document.querySelector('.header-right');
+
+            if (menuToggle && navLinks) {
+                menuToggle.addEventListener('click', function() {
+                    menuToggle.classList.toggle('active');
+                    navLinks.classList.toggle('active');
+                });
+
+                document.querySelectorAll('.nav-links a').forEach(link => {
+                    link.addEventListener('click', function() {
+                        menuToggle.classList.remove('active');
+                        navLinks.classList.remove('active');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

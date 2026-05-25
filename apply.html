@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APEX 在线认证申请系统与管理后台 | GBA-FM-ARC</title>
+    <style>
+        :root {
+            --primary-blue: #0f4c81;     /* 医疗深蓝 */
+            --accent-gold: #d4af37;       /* 品质金 */
+            --bg-light: #f8fafc;          /* 浅灰色背景 */
+            --bg-white: #ffffff;          /* 白色背景 */
+            --text-main: #2d3748;         /* 主文本色 */
+            --text-muted: #718096;        /* 次要文本色 */
+            --border-color: #e2e8f0;      /* 边框色 */
+            --success-color: #38a169;     /* 成功绿 */
+            --warning-amber: #b45309;     /* 警告橙 */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft YaHei", sans-serif; color: var(--text-main); background-color: var(--bg-light); line-height: 1.6; }
+
+        /* 统一顶栏 */
+        .sys-header { background-color: var(--primary-blue); color: var(--bg-white); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.08); position: relative; }
+        .sys-header h1 { font-size: 1.3rem; font-weight: 700; }
+        .header-right-zone { display: flex; align-items: center; gap: 20px; }
+        .user-info-bar { display: flex; align-items: center; gap: 15px; font-size: 0.95rem; }
+        .logout-btn { color: var(--accent-gold); text-decoration: none; font-weight: 600; cursor: pointer; }
+
+        /* 🌐 语言切换组件样式 */
+        .lang-selector-wrapper { display: flex; align-items: center; gap: 5px; }
+        .lang-select { background-color: rgba(255, 255, 255, 0.15); color: var(--bg-white); border: 1px solid rgba(255, 255, 255, 0.3); padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.88rem; cursor: pointer; outline: none; transition: all 0.3s; }
+        .lang-select:hover { background-color: rgba(255, 255, 255, 0.25); }
+        .lang-select option { color: var(--text-main); background-color: var(--bg-white); }
+
+        /* 移动端菜单折叠 */
+        .menu-toggle { display: none; flex-direction: column; cursor: pointer; gap: 5px; padding: 5px; }
+        .menu-toggle .bar { width: 25px; height: 3px; background-color: var(--bg-white); transition: all 0.3s ease; border-radius: 2px; }
+
+        /* 统一容器布局 */
+        .sys-container { max-width: 1280px; margin: 2rem auto; padding: 0 1.5rem; }
+        .view-panel { display: none; background-color: var(--bg-white); border-radius: 8px; padding: 2.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid var(--border-color); }
+        .view-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+        /* 登录注册门禁 */
+        .login-box { max-width: 450px; margin: 5rem auto; background: var(--bg-white); padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-top: 5px solid var(--primary-blue); }
+        .login-tabs { display: flex; border-bottom: 2px solid var(--bg-light); margin-bottom: 2rem; }
+        .login-tab-item { flex: 1; text-align: center; padding: 0.8rem; cursor: pointer; font-weight: 600; color: var(--text-muted); }
+        .login-tab-item.active { color: var(--primary-blue); border-bottom: 3px solid var(--primary-blue); font-weight: 700; }
+
+        /* 表单控件基本样式 */
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.92rem; color: var(--text-main); }
+        .form-control { width: 100%; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.92rem; color: var(--text-main); }
+        .form-control:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+
+        /* 按钮设计体系 */
+        .btn { padding: 0.6rem 1.6rem; border-radius: 6px; border: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; display: inline-block; text-decoration: none; text-align: center; }
+        .btn-blue { background-color: var(--primary-blue); color: var(--bg-white); }
+        .btn-blue:hover { background-color: #0b3a63; }
+        .btn-green { background-color: var(--success-color); color: var(--bg-white); }
+        .btn-green:hover { background-color: #2f855a; }
+        .btn-outline { background-color: var(--bg-white); color: var(--primary-blue); border: 1px solid var(--primary-blue); }
+        .btn-outline:hover { background-color: #f0f4f8; }
+
+        /* 看板状态流程 */
+        .progress-circle-flow { display: flex; justify-content: space-between; gap: 0.5rem; margin: 1.5rem 0; flex-wrap: wrap; }
+        .flow-node { flex: 1; min-width: 120px; text-align: center; background: #f8fafc; padding: 0.8rem 0.4rem; border-radius: 8px; border: 1px solid var(--border-color); opacity: 0.4; }
+        .flow-node.current { opacity: 1; border-color: var(--primary-blue); background-color: #f0f4f8; box-shadow: 0 4px 10px rgba(15,76,129,0.05); }
+        .flow-node.current .node-circle { background-color: var(--primary-blue); color: white; }
+        .node-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--primary-blue); color: var(--primary-blue); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-weight: bold; }
+        .node-text { font-size: 0.82rem; font-weight: 700; color: var(--primary-blue); }
+
+        /* 说明引导区块 */
+        .guide-alert-box { background-color: #f0f4f8; border-left: 5px solid var(--primary-blue); padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-size: 0.92rem; }
+        .guide-alert-box h4 { color: var(--primary-blue); font-weight: bold; margin-bottom: 0.3rem; }
+        
+        /* 结构化左右分步填报布局 */
+        .wizard-layout { display: flex; gap: 2rem; margin-top: 1.5rem; align-items: flex-start; }
+        .wizard-side { width: 280px; background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.8rem; position: sticky; top: 90px; z-index: 10; }
+        .wizard-tab { padding: 0.7rem 0.9rem; border-left: 4px solid transparent; cursor: pointer; font-size: 0.9rem; font-weight: 500; margin-bottom: 0.2rem; border-radius: 4px; }
+        .wizard-tab.active { background-color: #f0f4f8; border-left-color: var(--primary-blue); font-weight: 700; color: var(--primary-blue); }
+        .wizard-main { flex: 1; background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 6px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
+        .wizard-sec { display: none; }
+        .wizard-sec.active { display: block; }
+
+        /* 系统复杂多列表格样式 */
+        .form-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.88rem; background-color: var(--bg-white); }
+        .form-table th, .form-table td { padding: 8px 10px; border: 1px solid var(--border-color); text-align: left; vertical-align: middle; }
+        .form-table th { background-color: var(--bg-light); color: var(--primary-blue); font-weight: 700; }
+        .choice-group { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+        .choice-lbl { display: flex; align-items: center; gap: 4px; cursor: pointer; font-weight: 500 !important; }
+
+        /* 后台审查画布样式 */
+        .report-display { background-color: #fefaf0; border: 1px dashed rgba(212,175,55,0.6); padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem; }
+        .admin-review-canvas { border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 8px; max-height: 500px; overflow-y: auto; background-color: #f8fafc; margin-bottom: 2rem; }
+        .review-block-title { font-size: 1.1rem; color: var(--primary-blue); font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.8rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; }
+        .review-text-item { font-size: 0.92rem; margin-bottom: 0.5rem; color: var(--text-main); background: #fff; padding: 6px 12px; border-radius: 4px; border: 1px solid #edf2f7; }
+        .review-text-item strong { color: #4a5568; display: inline-block; width: 280px; }
+        .mock-dl-link { color: var(--primary-blue); text-decoration: underline; cursor: pointer; font-weight: bold; }
+        .mock-dl-link:hover { color: #0b3a63; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 移动响应式 */
+        @media (max-width: 1024px) {
+            .wizard-layout { flex-direction: column; }
+            .wizard-side { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 5px; }
+            .wizard-tab { border-left: none; border-bottom: 3px solid transparent; flex: 1; min-width: 130px; text-align: center; padding: 0.5rem; }
+            .wizard-tab.active { border-bottom-color: var(--primary-blue); background-color: #f0f4f8; }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; }
+            .header-right-zone { position: absolute; top: 100%; right: 0; background-color: var(--primary-blue); padding: 1rem; width: 220px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-direction: column; align-items: flex-start; gap: 15px; z-index: 1020; display: none; }
+            .header-right-zone.active { display: flex; }
+            .user-info-bar { flex-direction: column; align-items: flex-start; gap: 10px; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="sys-header">
+        <h1 data-i18n="sys_title">APEX 国际基层医疗机构认证综合管理平台</h1>
+        
+        <div class="menu-toggle" id="sys-menu-toggle">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <div class="header-right-zone" id="headerRightZone">
+            <div class="lang-selector-wrapper">
+                <select class="lang-select" id="langSelectDropdown" onchange="executeLanguageSwitch(this.value)">
+                    <option value="zh-CN">简体中文</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+
+            <div class="user-info-bar" id="userInfoBar" style="display: none;">
+                <span id="txtUserRole" data-i18n="role_init">角色定位：申请机构登录</span>
+                <span class="logout-btn" onclick="handleLogout()" data-i18n="logout_btn">【安全退出系统】</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="sys-container" id="viewGate">
+        <div class="login-box">
+            <div class="login-tabs">
+                <div class="login-tab-item active" id="tabApplicant" onclick="switchGateTab('applicant')" data-i18n="gate_tab_app">申请机构登录</div>
+                <div class="login-tab-item" id="tabSecretariat" onclick="switchGateTab('secretariat')" data-i18n="gate_tab_sec">管理后台</div>
+            </div>
+            
+            <div id="formApplicantBlock">
+                <div class="form-group">
+                    <label data-i18n="login_acc_lbl">登录账号 / 电子邮箱</label>
+                    <input type="text" class="form-control" id="appAccount" data-i18n-placeholder="login_acc_ph" placeholder="请输入您的申办邮箱">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="login_pass_lbl">登录密码</label>
+                    <input type="password" class="form-control" id="appPassword" data-i18n-placeholder="login_pass_ph" placeholder="请输入账号密码">
+                </div>
+                <button type="button" class="btn btn-blue" style="width: 100%; margin-bottom: 1rem;" onclick="performLogin('applicant')" data-i18n="login_btn">立即登录系统</button>
+                <p style="text-align: center; font-size: 0.88rem; color: var(--text-muted);" id="regPromptBlock">
+                    <span data-i18n="reg_prompt">尚未开设认证账户？</span><span style="color: var(--primary-blue); cursor: pointer; font-weight: bold;" onclick="toggleRegisterMode(true)" data-i18n="reg_link">【点击注册账户】</span>
+                </p>
+            </div>
+
+            <div id="formRegisterBlock" style="display: none;">
+                <h3 style="font-size: 1.05rem; margin-bottom: 1.2rem; color: var(--primary-blue);" data-i18n="reg_title">注册 APEX 认证申请账户</h3>
+                <div class="form-group">
+                    <label data-i18n="reg_org_lbl">拟申办医疗机构全称（中文）</label>
+                    <input type="text" class="form-control" id="regOrgName" data-i18n-placeholder="reg_org_ph" placeholder="请与执业许可证红印全称保持一致">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="reg_email_lbl">设置登录邮箱/账号</label>
+                    <input type="email" class="form-control" id="regEmail">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="reg_pass_lbl">设置系统安全密码</label>
+                    <input type="password" class="form-control" id="regPass">
+                </div>
+                <button type="button" class="btn btn-green" style="width: 100%; margin-bottom: 1rem;" onclick="performRegistration()" data-i18n="reg_btn">注册账户</button>
+                <button type="button" class="btn btn-outline" style="width: 100%;" onclick="toggleRegisterMode(false)" data-i18n="reg_back">返回登录界面</button>
+            </div>
+
+            <div id="formSecretariatBlock" style="display: none;">
+                <div class="form-group">
+                    <label data-i18n="sec_acc_lbl">管理后台账号</label>
+                    <input type="text" class="form-control" id="secAccount" data-i18n-placeholder="sec_acc_ph" placeholder="请输入管理后台账号">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="sec_pass_lbl">管理后台密码</label>
+                    <input type="password" class="form-control" id="secPassword" data-i18n-placeholder="sec_pass_ph" placeholder="请输入管理后台密码">
+                </div>
+                <button type="button" class="btn btn-blue" style="width: 100%;" onclick="performLogin('secretariat')" data-i18n="sec_login_btn">进入中央控制后台</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sys-container view-panel" id="viewApplicantPortal">
+        <h2 style="color: var(--primary-blue); margin-bottom: 1rem;" id="lblApplicantHeader">欢迎您进驻系统</h2>
+        
+        <div class="guide-alert-box" style="background-color: var(--bg-white); border: 1px solid var(--border-color);">
+            <h4 data-i18n="flow_hdr">🧭 机构 APEX 正式认证生命周期全流程实时跟踪看板</h4>
+            <div class="progress-circle-flow" id="progressFlowContainer">
+                <div class="flow-node" id="node1"><div class="node-circle">1</div><div class="node-text" data-i18n="f_n1">申请咨询</div></div>
+                <div class="flow-node" id="node2"><div class="node-circle">2</div><div class="node-text" data-i18n="f_n2">提交申请</div></div>
+                <div class="flow-node" id="node3"><div class="node-circle">3</div><div class="node-text" data-i18n="f_n3">文件初审</div></div>
+                <div class="flow-node" id="node4"><div class="node-circle">4</div><div class="node-text" data-i18n="f_n4">签约缴费</div></div>
+                <div class="flow-node" id="node5"><div class="node-circle">5</div><div class="node-text" data-i18n="f_n5">文件审核</div></div>
+                <div class="flow-node" id="node6"><div class="node-circle">6</div><div class="node-text" data-i18n="f_n6">现场评估</div></div>
+                <div class="flow-node" id="node7"><div class="node-circle">7</div><div class="node-text" data-i18n="f_n7">结果公布</div></div>
+            </div>
+        </div>
+
+        <div class="report-display" id="applicantReportBlock" style="display: none;">
+            <h4 style="color: var(--warning-amber); margin-bottom: 0.5rem;" data-i18n="rep_hdr">📜 FMARC 标准委员会评审等级与终审报告公告</h4>
+            <div id="txtReportView" style="white-space: pre-line; font-size: 0.95rem; color: #451a03;">暂无报告内容</div>
+        </div>
+
+        <div id="applicationFormContainer" style="margin-top: 2.5rem;">
+            <div class="guide-alert-box">
+                <h4 data-i18n="form_hdr_txt">关于 APEX 国际基层医疗机构认证标准申报与填报承诺</h4>
+                <p data-i18n="form_hdr_desc">APEX (International Accreditation for Primary Care Excellence) 国际基层医疗机构认证标准由FMARC发起。请依据《APEX国际基层医疗机构认证标准》各章节要求如实进行填报。</p>
+            </div>
+
+            <div class="wizard-layout">
+                <div class="wizard-side">
+                    <div class="wizard-tab active" id="wTab1" onclick="switchWizardTab(1)" data-i18n="w_t1">第（一）部分：机构基本信息</div>
+                    <div class="wizard-tab" id="wTab2" onclick="switchWizardTab(2)" data-i18n="w_t2">第（二）部分：内审员信息</div>
+                    <div class="wizard-tab" id="wTab3" onclick="switchWizardTab(3)" data-i18n="w_t3">第（三）部分：详细信息申报</div>
+                    <div class="wizard-tab" id="wTab4" onclick="switchWizardTab(4)" data-i18n="w_t4">第（四）部分：佐证文件清单</div>
+                    <div class="wizard-tab" id="wTab5" onclick="switchWizardTab(5)" data-i18n="w_t5">第（五）部分：申请确认</div>
+                </div>
+                
+                <div class="wizard-main" id="wizardMainForm">
+                    <div class="wizard-sec active" id="wSec1">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue);" data-i18n="w_t1">第（一）部分：机构基本信息</h3>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_org_cn">医疗机构全称（中文）</label><input type="text" class="form-control" id="f_org_name" disabled></div>
+                            <div class="form-group"><label data-i18n="lbl_org_en">医疗机构全称（英文）</label><input type="text" class="form-control" id="f_org_name_en"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_social_code">统一社会信用代码 / 商业登记证编号</label><input type="text" class="form-control" id="f_social_code"></div>
+                            <div class="form-group"><label data-i18n="lbl_license_reg">医疗执业许可证登记号</label><input type="text" class="form-control" id="f_license_reg_num"></div>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="lbl_org_type">机构类型</label>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="公立医院全科医学部/家庭医学门诊"> <span data-i18n="opt_t1">公立医院全科医学部 / 家庭医学门诊</span></label>
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="私立医院全科医学部/家庭医学门诊"> <span data-i18n="opt_t2">私立医院全科医学部 / 家庭医学门诊</span></label>
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="社区卫生服务中心/站"> <span data-i18n="opt_t3">社区卫生服务中心/站</span></label>
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="乡镇卫生院"> <span data-i18n="opt_t4">乡镇卫生院</span></label>
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="家庭医生/全科诊所（医疗集团、合资）"> <span data-i18n="opt_t5">家庭医生/全科诊所（医疗集团、合资）</span></label>
+                                <label class="choice-lbl"><input type="radio" name="f_org_type" value="家庭医生/全科诊所（独资）"> <span data-i18n="opt_t6">家庭医生/全科诊所（独资）</span></label>
+                            </div>
+                        </div>
+                        <div class="form-group"><label data-i18n="lbl_address">机构地址</label><input type="text" class="form-control" id="f_address"></div>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_area">总占地面积（平方米）</label><input type="number" class="form-control" id="f_area"></div>
+                            <div class="form-group"><label data-i18n="lbl_phone">机构联系电话</label><input type="tel" class="form-control" id="f_phone"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_pop">服务常驻人口数（人）</label><input type="number" class="form-control" id="f_pop_served"></div>
+                            <div class="form-group"><label data-i18n="lbl_site">机构官网</label><input type="url" class="form-control" id="f_website"></div>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group"><label data-i18n="lbl_legal">机构法人/负责人姓名</label><input type="text" class="form-control" id="f_legal_name"></div>
+                            <div class="form-group"><label>负责人联系电话</label><input type="tel" class="form-control" id="f_legal_phone"></div>
+                            <div class="form-group"><label data-i18n="lbl_open_date">机构开业日期</label><input type="date" class="form-control" id="f_open_date"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_work_hours">机构开放时间</label><input type="text" class="form-control" id="f_work_hours" placeholder="如周一至周五 08:00-17:00"></div>
+                            <div class="form-group">
+                                <label data-i18n="lbl_intl_cert">是否已有其他国际认证</label>
+                                <div class="choice-group" style="padding-top:0.5rem;">
+                                    <label class="choice-lbl"><input type="radio" name="f_has_intl_cert" value="是"> <span data-i18n="yes">是</span></label>
+                                    <label class="choice-lbl"><input type="radio" name="f_has_intl_cert" value="否"> <span data-i18n="no">否</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-sec" id="wSec2">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue);" data-i18n="w_t2">第（二）部分：内审员信息</h3>
+                        <div class="guide-alert-box" style="margin-bottom:1.5rem;">
+                            <p data-i18n="auditor_desc">说明：内审员为本机构内部负责质量管理、自评、文件准备及与FMARC对接的主要联系人，应具备质量管理或医疗管理相关培训背景。</p>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_aud_cn">内审员姓名（中文）</label><input type="text" class="form-control" id="f_auditor_cn"></div>
+                            <div class="form-group"><label data-i18n="lbl_aud_en">内审员姓名（英文）</label><input type="text" class="form-control" id="f_auditor_en"></div>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group"><label data-i18n="lbl_aud_title">机构内职务</label><input type="text" class="form-control" id="f_auditor_title"></div>
+                            <div class="form-group">隐私保护<label>联系电话</label><input type="tel" class="form-control" id="f_auditor_phone"></div>
+                            <div class="form-group"><label>电子邮箱</label><input type="email" class="form-control" id="f_auditor_email"></div>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="lbl_aud_duty">主要职责简述</label>
+                            <textarea class="form-control" id="f_auditor_duty" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="wizard-sec" id="wSec3">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue);" data-i18n="w_t3">第（三）部分：详细信息申报</h3>
+                        
+                        <h4 style="color: var(--primary-blue); margin-bottom:0.6rem;" data-i18n="h_sub_lic">1. 服务机构资质与管理标准 - 机构资质</h4>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_sub_lic">医疗执业许可证编号（商业登记证编号）</label><input type="text" class="form-control" id="f_sub_lic_num"></div>
+                            <div class="form-group"><label data-i18n="lbl_sub_lic_sub">诊疗科目</label><input type="text" class="form-control" id="f_sub_lic_sub"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_sub_lic_auth">发证机关</label><input type="text" class="form-control" id="f_sub_lic_auth"></div>
+                            <div class="form-group"><label data-i18n="lbl_sub_lic_exp">有效期至</label><input type="date" class="form-control" id="f_sub_lic_expiry"></div>
+                        </div>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;" data-i18n="h_org_duty">2. 组织架构与职责</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th style="width:250px;" data-i18n="th_post">岗位名称</th><th data-i18n="th_name">姓名</th><th data-i18n="th_duty">主要职责简要说明</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong data-i18n="p_post1">法定代表人 / 董事</strong></td><td><input type="text" class="form-control" id="f_owner_name_1"></td><td><input type="text" class="form-control" id="f_owner_duty_1"></td></tr>
+                                <tr><td><strong data-i18n="p_post2">医疗主管</strong></td><td><input type="text" class="form-control" id="f_owner_name_2"></td><td><input type="text" class="form-control" id="f_owner_duty_2"></td></tr>
+                                <tr><td><strong data-i18n="p_post3">护理主管</strong></td><td><input type="text" class="form-control" id="f_owner_name_3"></td><td><input type="text" class="form-control" id="f_owner_duty_3"></td></tr>
+                                <tr><td><strong data-i18n="p_post4">质量与安全负责人</strong></td><td><input type="text" class="form-control" id="f_owner_name_4"></td><td><input type="text" class="form-control" id="f_owner_duty_4"></td></tr>
+                                <tr><td><strong data-i18n="p_post5">服务协调负责人（保险、转诊等）</strong></td><td><input type="text" class="form-control" id="f_owner_name_5"></td><td><input type="text" class="form-control" id="f_owner_duty_5"></td></tr>
+                            </tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;" data-i18n="h_infra">3. 基础设施与功能区详情</h4>
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;" data-i18n="infra_note">* 请提供单个空间的面积，例如全科诊室，应填写单个诊室（最常用）的面积。</p>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th data-i18n="th_zone_name">功能区名称</th><th style="width:100px;" data-i18n="th_qty">数量</th><th style="width:120px;" data-i18n="th_size">面积(m2)</th><th data-i18n="th_usage">主要用途与提供的服务</th></tr>
+                            </thead>
+                            <tbody id="functionalZoneBody">
+                                </tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;" data-i18n="h_sops_sec">4. 管理制度（SOP）</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th data-i18n="th_sop_title">制度名称</th><th data-i18n="th_sop_doc">文件名称 / 对应章节</th><th style="width:230px;" data-i18n="th_sop_status">当前状态</th><th data-i18n="th_sop_owner">执行负责人(姓名和职务)</th></tr>
+                            </thead>
+                            <tbody id="sopTableBody">
+                                </tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:2rem; margin-bottom:0.6rem;" data-i18n="h_staff_req">5. 服务人员资质与能力要求</h4>
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color);" data-i18n="lbl_staff_dr">（1）家庭医生/全科医生</p>
+                        <div class="grid-3">
+                            <div class="form-group"><label data-i18n="lbl_dr_total">全科医生总数（名）</label><input type="number" class="form-control" id="f_dr_total"></div>
+                            <div class="form-group"><label data-i18n="lbl_dr_nl">内地注册医生（名）</label><input type="number" class="form-control" id="f_dr_nl"></div>
+                            <div class="form-group"><label data-i18n="lbl_dr_hk">香港注册医生（名）</label><input type="number" class="form-control" id="f_dr_hk"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_dr_mo">澳门与其它地区注册医生（名）</label><input type="number" class="form-control" id="f_dr_mo"></div>
+                            <div class="form-group"><label data-i18n="lbl_dr_exp">临床经验 &ge; 3年的医生占比（%）</label><input type="text" class="form-control" id="f_dr_exp"></div>
+                        </div>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;" data-i18n="lbl_staff_ns">（2）护理人员</p>
+                        <div class="grid-3">
+                            <div class="form-group"><label data-i18n="lbl_ns_total">全科护士总数（名）</label><input type="number" class="form-control" id="f_ns_total"></div>
+                            <div class="form-group"><label data-i18n="lbl_ns_nl">内地注册护士（名）</label><input type="number" class="form-control" id="f_ns_nl"></div>
+                            <div class="form-group"><label data-i18n="lbl_ns_hk">香港注册护士（名）</label><input type="number" class="form-control" id="f_ns_hk"></div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_ns_mo">澳门与其它地区注册护士（名）</label><input type="number" class="form-control" id="f_ns_mo"></div>
+                            <div class="form-group"><label data-i18n="lbl_ns_exp">临床经验 &ge; 3年的护士占比（%）</label><input type="text" class="form-control" id="f_ns_exp"></div>
+                        </div>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;" data-i18n="lbl_staff_aux">（3）其他辅助人员统计数（名）</p>
+                        <div class="grid-3">
+                            <div class="form-group"><label data-i18n="aux_1">药师</label><input type="number" class="form-control" id="f_aux_1"></div>
+                            <div class="form-group"><label data-i18n="aux_2">公卫医师</label><input type="number" class="form-control" id="f_aux_2"></div>
+                            <div class="form-group"><label data-i18n="aux_3">健康管理师</label><input type="number" class="form-control" id="f_aux_3"></div>
+                            <div class="form-group"><label data-i18n="aux_4">营养师</label><input type="number" class="form-control" id="f_aux_4"></div>
+                            <div class="form-group"><label data-i18n="aux_5">康复治疗师</label><input type="number" class="form-control" id="f_aux_5"></div>
+                            <div class="form-group"><label data-i18n="aux_6">心理咨询师</label><input type="number" class="form-control" id="f_aux_6"></div>
+                            <div class="form-group"><label data-i18n="aux_7">前台 / 接待人员</label><input type="number" class="form-control" id="f_aux_7"></div>
+                            <div class="form-group"><label data-i18n="aux_8">陪诊员</label><input type="number" class="form-control" id="f_aux_8"></div>
+                            <div class="form-group"><label data-i18n="aux_9">其他</label><input type="text" class="form-control" id="f_aux_9"></div>
+                        </div>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;" data-i18n="lbl_staff_lang">（4）语言能力</p>
+                        <div class="form-group">
+                            <label data-i18n="lbl_lang_main">主要语种</label>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="checkbox" name="f_lang_type" value="普通话"> <span data-i18n="l_zh">普通话</span></label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_lang_type" value="粤语"> <span data-i18n="l_canton">粤语</span></label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_lang_type" value="英语"> <span data-i18n="l_en">英语</span></label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_lang_type" value="其他"> <span data-i18n="l_other">其他语种</span></label>
+                            </div>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group"><label data-i18n="lbl_eng_dr">能提供英语服务医生占比(%)</label><input type="text" class="form-control" id="f_lang_dr"></div>
+                            <div class="form-group"><label data-i18n="lbl_eng_ns">能提供英语服务护士占比(%)</label><input type="text" class="form-control" id="f_lang_ns"></div>
+                            <div class="form-group"><label data-i18n="lbl_eng_front">能提供英语服务前台占比(%)</label><input type="text" class="form-control" id="f_lang_front"></div>
+                        </div>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;" data-i18n="lbl_staff_cpd">（5）持续专业发展与培训（CPD）</p>
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label data-i18n="lbl_has_plan">是否有制定培训计划</label>
+                                <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_cpd_plan" value="是"> <span data-i18n="yes">是</span></label><label class="choice-lbl"><input type="radio" name="f_cpd_plan" value="否"> <span data-i18n="no">否</span></label></div>
+                            </div>
+                            <div class="form-group"><label data-i18n="lbl_cpd_count">平均组织培训场次</label><input type="number" class="form-control" id="f_cpd_count"></div>
+                            <div class="form-group"><label data-i18n="lbl_intl_count">参与国际课程人数</label><input type="number" class="form-control" id="f_cpd_intl"></div>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="lbl_psy_channel">是否有心理支持沟通渠道及相关措施</label>
+                            <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_cpd_psy" value="是"> <span data-i18n="yes">是</span></label><label class="choice-lbl"><input type="radio" name="f_cpd_psy" value="否"> <span data-i18n="no">否</span></label></div>
+                            <input type="text" class="form-control" style="margin-top:5px;" id="f_cpd_psy_txt">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="lbl_has_satisfaction">是否有开展员工满意度调查？</label>
+                            <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_cpd_eval" value="是"> <span data-i18n="yes">是</span></label><label class="choice-lbl"><input type="radio" name="f_cpd_eval" value="否"> <span data-i18n="no">否</span></label></div>
+                        </div>
+
+                        <h4 style="color: var(--primary-blue); margin-top:2rem; margin-bottom:0.6rem;" data-i18n="h_srv_prov">6. 服务内容与提供方式申报</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th data-i18n="th_srv_project">服务项目</th><th style="width:280px;" data-i18n="th_prov_method">提供方式</th><th data-i18n="th_srv_owner">服务负责人 / 协作机构全称</th></tr>
+                            </thead>
+                            <tbody id="srvItemTableBody"></tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;" data-i18n="h_local_ref">（2）本地转诊网络配置</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th style="width:70px;">序号</th><th data-i18n="th_ref_org">机构名称</th><th style="width:250px;" data-i18n="th_ref_type">机构类型</th><th data-i18n="th_ref_reason">主要转诊原因 / 服务项目</th></tr>
+                            </thead>
+                            <tbody id="localReferralTableBody"></tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;" data-i18n="h_net_hospital_sec">（3）线上互联网医院服务详情</h4>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label data-i18n="lbl_has_net_qual">是否取得互联网诊疗资质</label>
+                                <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_net_hospital" value="是"> <span data-i18n="yes">是</span></label><label class="choice-lbl"><input type="radio" name="f_net_hospital" value="否"> <span data-i18n="no">否</span></label></div>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="lbl_net_hours">线上开诊服务时间</label>
+                                <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_net_time" value="7x24"> <span data-i18n="opt_h1">7&times;24小时</span></label><label class="choice-lbl"><input type="radio" name="f_net_time" value="固定时段"> <span data-i18n="opt_h2">固定时段</span></label><label class="choice-lbl"><input type="radio" name="f_net_time" value="预约制"> <span data-i18n="opt_h3">预约制</span></label></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="lbl_net_platform">主要服务平台及链接链接系统</label>
+                            <div class="choice-group" style="margin-bottom:5px;"><label class="choice-lbl"><input type="checkbox" name="f_net_plat" value="自有APP"> 自有网页版/APP</label><label class="choice-lbl"><input type="checkbox" name="f_net_plat" value="微信小程序"> 微信小程序</label><label class="choice-lbl"><input type="checkbox" name="f_net_plat" value="第三方"> 第三方平台</label></div>
+                            <input type="url" class="form-control" id="f_net_url">
+                        </div>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;" data-i18n="h_pay_sec">（4）支付形式</h4>
+                        <div class="form-group">
+                            <label data-i18n="lbl_pay_support">机构支持的支付方式</label>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="checkbox" name="f_pay_sys" value="内地医保结算"> 内地医保结算</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_pay_sys" value="商业医疗保险直付结算"> 商业医疗保险直付结算</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_pay_sys" value="自费"> 现金/刷卡/移动支付（自费）</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_pay_sys" value="医疗卡结算"> 医疗卡结算</label>
+                            </div>
+                        </div>
+
+                        <h4 style="color: var(--primary-blue); margin-top:1.5rem; margin-bottom:0.6rem;" data-i18n="h_cross_sec">（5）跨境医疗服务网络</h4>
+                        <div class="form-group">
+                            <label data-i18n="lbl_has_cross">是否提供跨境服务</label>
+                            <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_cross_border" value="是"> <span data-i18n="yes">是</span></label><label class="choice-lbl"><input type="radio" name="f_cross_border" value="否"> <span data-i18n="no">否</span></label></div>
+                        </div>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th style="width:70px;">序号</th><th data-i18n="th_cross_org">机构名称</th><th style="width:230px;" data-i18n="th_cross_loc">所在地</th><th style="width:180px;" data-i18n="th_cross_type">机构类型</th><th data-i18n="th_cross_content">主要协作内容</th></tr>
+                            </thead>
+                            <tbody id="crossBorderTableBody"></tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:2rem; margin-bottom:0.6rem;" data-i18n="h_safety_audit">7. 患者安全与数据管理自评</h4>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th data-i18n="th_safe_project">自评审查项目</th><th data-i18n="th_safe_req">具体评审指标</th><th style="width:130px;" data-i18n="th_safe_eval">机构自评</th></tr>
+                            </thead>
+                            <tbody id="safetySelfTableBody"></tbody>
+                        </table>
+
+                        <h4 style="color: var(--primary-blue); margin-top:2rem; margin-bottom:0.6rem;" data-i18n="h_qc_sec">8. 服务质量控制管理</h4>
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color);" data-i18n="lbl_qc_in">（1）内部质量控制活动数据（过去12个月记录）</p>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th data-i18n="th_qc_type">质量控制类型</th><th data-i18n="th_qc_count">开展次数</th><th data-i18n="th_qc_method">具体的质控方法</th><th data-i18n="th_qc_owner">负责人</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>线下服务质控</strong></td><td><input type="number" class="form-control" id="f_qc_in_c1"></td><td><input type="text" class="form-control" id="f_qc_in_m1"></td><td><input type="text" class="form-control" id="f_qc_in_o1"></td></tr>
+                                <tr><td><strong>线上服务质控</strong></td><td><input type="number" class="form-control" id="f_qc_in_c2"></td><td><input type="text" class="form-control" id="f_qc_in_m2"></td><td><input type="text" class="form-control" id="f_qc_in_o2"></td></tr>
+                                <tr><td><strong>临床质控</strong></td><td><input type="number" class="form-control" id="f_qc_in_c3"></td><td><input type="text" class="form-control" id="f_qc_in_m3"></td><td><input type="text" class="form-control" id="f_qc_in_o3"></td></tr>
+                            </tbody>
+                        </table>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;" data-i18n="lbl_qc_ex">（2）外部评价与患者反馈</p>
+                        <table class="form-table">
+                            <thead>
+                                <tr><th data-i18n="th_ex_type">外部质控类型</th><th data-i18n="th_ex_count">开展次数</th><th data-i18n="th_ex_rep">总收集反馈数量（份）</th><th data-i18n="th_ex_method">采集方法</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>患者满意度调查</td><td><input type="number" class="form-control" id="f_qc_ex_c1"></td><td><input type="number" class="form-control" id="f_qc_ex_r1"></td><td><input type="text" class="form-control" id="f_qc_ex_m1"></td></tr>
+                                <tr><td>神秘顾客/患者</td><td><input type="number" class="form-control" id="f_qc_ex_c2"></td><td><input type="number" class="form-control" id="f_qc_ex_r2"></td><td><input type="text" class="form-control" id="f_qc_ex_m2"></td></tr>
+                            </tbody>
+                        </table>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;" data-i18n="lbl_qc_comp">（3）投诉与反馈处理</p>
+                        <div class="form-group">
+                            <label data-i18n="lbl_comp_channel">投诉沟通反馈渠道</label>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="意见收集箱"> 意见收集箱</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="现场反馈窗口"> 现场反馈窗口</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="专用热线"> 专用热线电话</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="官网反馈"> 官网反馈渠道</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="微信小程序"> 微信小程序</label>
+                                <label class="choice-lbl"><input type="checkbox" name="f_comp_chan" value="随访电话"> 随访电话</label>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group"><label data-i18n="lbl_comp_val">过去12个月内共收集多少单患者投诉案例？</label><input type="number" class="form-control" id="f_complaint_val"></div>
+                            <div class="form-group"><label data-i18n="lbl_resolved_val">当中已受理并顺利解决的案例占比为？（%）</label><input type="text" class="form-control" id="f_resolved_val"></div>
+                        </div>
+
+                        <p style="font-weight:700; font-size:0.9rem; color:var(--primary-color); margin-top:1rem;" data-i18n="lbl_qc_app">（4）质控数据应用（双闭环案例简述）</p>
+                        <div style="border: 1px solid var(--border-color); padding: 1.2rem; border-radius:6px; margin-bottom:1rem;">
+                            <label style="font-weight:700; display:block; margin-bottom:0.5rem; color:var(--primary-blue);" data-i18n="lbl_case1">案例（1）：</label>
+                            <div class="form-group"><label data-i18n="lbl_case_src">数据问题来源</label>
+                                <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_case1_src" value="患者满意度调查"> 患者满意度调查</label><label class="choice-lbl"><input type="radio" name="f_case1_src" value="神秘患者质控"> 神秘患者质控</label><label class="choice-lbl"><input type="radio" name="f_case1_src" value="内部质控"> 内部质控</label><label class="choice-lbl"><input type="radio" name="f_case1_src" value="不良事件报告"> 不良事件报告</label></div>
+                            </div>
+                            <div class="form-group"><label data-i18n="lbl_case_p">识别问题</label><input type="text" class="form-control" id="f_case1_p"></div>
+                            <div class="form-group"><label data-i18n="lbl_case_m">计划措施</label><input type="text" class="form-control" id="f_case1_m"></div>
+                            <div class="form-group"><label data-i18n="lbl_case_a">改进行动</label><input type="text" class="form-control" id="f_case1_a"></div>
+                            <div class="grid-3">
+                                <div class="form-group"><label data-i18n="lbl_case_v">效果验证</label><input type="text" class="form-control" id="f_case1_v"></div>
+                                <div class="form-group"><label data-i18n="lbl_case_r">最终结果</label><input type="text" class="form-control" id="f_case1_r"></div>
+                                <div class="form-group"><label data-i18n="lbl_case_o">主要负责人</label><input type="text" class="form-control" id="f_case1_o"></div>
+                            </div>
+                        </div>
+                        <div style="border: 1px solid var(--border-color); padding: 1.2rem; border-radius:6px;">
+                            <label style="font-weight:700; display:block; margin-bottom:0.5rem; color:var(--primary-blue);" data-i18n="lbl_case2">案例（2）：</label>
+                            <div class="form-group"><label data-i18n="lbl_case_src">数据问题来源</label>
+                                <div class="choice-group"><label class="choice-lbl"><input type="radio" name="f_case2_src" value="患者满意度调查"> 患者满意度调查</label><label class="choice-lbl"><input type="radio" name="f_case2_src" value="神秘患者质控"> 神秘患者质控</label><label class="choice-lbl"><input type="radio" name="f_case2_src" value="内部质控"> 内部质控</label><label class="choice-lbl"><input type="radio" name="f_case2_src" value="不良事件报告"> 不良事件报告</label></div>
+                            </div>
+                            <div class="form-group"><label data-i18n="lbl_case_p">识别问题</label><input type="text" class="form-control" id="f_case2_p"></div>
+                            <div class="form-group"><label data-i18n="lbl_case_m">计划措施</label><input type="text" class="form-control" id="f_case2_m"></div>
+                            <div class="form-group"><label data-i18n="lbl_case_a">改进行动</label><input type="text" class="form-control" id="f_case2_a"></div>
+                            <div class="grid-3">
+                                <div class="form-group"><label data-i18n="lbl_case_v">效果验证</label><input type="text" class="form-control" id="f_case2_v"></div>
+                                <div class="form-group"><label data-i18n="lbl_case_r">最终结果</label><input type="text" class="form-control" id="f_case2_r"></div>
+                                <div class="form-group"><label data-i18n="lbl_case_o">主要负责人</label><input type="text" class="form-control" id="f_case2_o"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="wizard-sec" id="wSec4">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue);" data-i18n="w_t4">第（四）部分：佐证文件清单</h3>
+                        <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1rem;" data-i18n="doc_desc_sec">（必要项）附件文件电子版随本表一并递交系统绑定归档，原件留底备查。</p>
+                        
+                        <table class="form-table">
+                            <thead><tr><th style="width:70px; text-align:center;">序号</th><th data-i18n="th_file_desc">佐证文件清单</th><th style="width:120px; text-align:center;" data-i18n="th_file_status">自查状态</th><th data-i18n="th_file_input">模拟上传文件名</th></tr></thead>
+                            <tbody id="docChecklistTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="wizard-sec" id="wSec5">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue);" data-i18n="w_t5">第（五）部分：申请确认</h3>
+                        <div style="background-color: var(--bg-light); border:1px solid var(--border-color); border-radius:6px; padding:1.5rem; text-align:justify; font-size:0.95rem; margin-bottom:1.5rem;" data-i18n="commit_text_sec">
+                            <strong>申请机构承诺：</strong><br>
+                            本机构郑重承诺，本申请表所填信息及后续提交的所有资料均真实、准确、完整。如在申请及认证期间信息发生变更，本机构将在变更发生后30日内或预定的现场评审日前30日（以较早者为准）书面通知深圳市粤港澳大湾区联合家庭医学评审评价研究中心（下称“FMARC”）。若在申请或认证过程中发现虚假、伪造信息或材料，认证中心有权终止评审；如已获颁证书，认证中心有权撤销认证，且本机构在五年内不得再次申请。
+                        </div>
+                        <div class="form-group">
+                            <label class="choice-lbl" style="color:var(--primary-blue); font-size:1rem;">
+                                <input type="checkbox" id="f_formal_check_commit"> <strong data-i18n="chk_commit_agree">我单位已完全阅读并签署承诺公函</strong>
+                            </label>
+                        </div>
+                        <div class="form-group" style="margin-top:1.5rem;"><label data-i18n="lbl_expect_date">期望现场评审日期</label><input type="date" class="form-control" id="f_expect_audit_date" style="max-width:300px;"></div>
+                        <div class="grid-2" style="margin-top:1.5rem;">
+                            <div class="form-group"><label data-i18n="lbl_rep_sign">法定代表人（亲笔签字确认）</label><input type="text" class="form-control" id="f_formal_signature"></div>
+                            <div class="form-group"><label data-i18n="lbl_formal_date">正式提报日期</label><input type="date" class="form-control" id="f_formal_date"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem; border-top:1px solid var(--border-color); padding-top:1.5rem; display:flex; justify-content:flex-end; gap:1rem;">
+                        <button type="button" class="btn btn-outline" onclick="saveDataDraft()" data-i18n="btn_save_draft">暂存申报资料卡</button>
+                        <button type="button" class="btn btn-blue" onclick="submitFormalData()" id="btnSystemSubmit" data-i18n="btn_formal_sub">正式锁定并提交申请</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sys-container view-panel" id="viewSecretariatPortal">
+        <h2 style="color: var(--primary-blue); margin-bottom: 2rem;" data-i18n="admin_hdr">FMARC 认证管理后台控制舱</h2>
+        
+        <div style="display: flex; gap: 2rem; align-items: flex-start;">
+            <div style="width: 320px; background-color: var(--bg-light); border-radius: 6px; padding: 1.2rem; border: 1px solid var(--border-color);">
+                <h4 style="margin-bottom: 1rem; color: var(--primary-blue);" data-i18n="admin_list_hdr">机构信息提报序列</h4>
+                <div id="adminOrgListContainer"></div>
+            </div>
+
+            <div style="flex: 1; background-color: var(--bg-white); border: 1px solid var(--border-color); border-radius: 6px; padding: 2rem;" id="adminAuditPanel">
+                <h3 style="color: var(--primary-blue); border-bottom: 2px solid var(--bg-light); padding-bottom: 0.5rem; margin-bottom: 1.5rem;" id="auditTargetName" data-i18n="admin_panel_init">请在左侧列表中选定申办单位开展评审核验</h3>
+                
+                <div id="auditContentBody" style="display: none;">
+                    <div style="background-color: #f0f4f8; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem;">
+                        <label style="font-weight: 700; display: block; margin-bottom: 0.5rem; color: var(--primary-blue);" data-i18n="lbl_admin_step_update">🔄 推进该机构认证项目所处的 APEX 生命周期流程节点：</label>
+                        <select class="form-control" id="optProgressStep" style="max-width: 280px; display: inline-block; margin-right: 1rem;">
+                            <option value="1">1. 申请咨询</option>
+                            <option value="2">2. 提交申请</option>
+                            <option value="3">3. 文件初审</option>
+                            <option value="4">4. 签约缴费</option>
+                            <option value="5">5. 文件审核</option>
+                            <option value="6">6. 现场评估</option>
+                            <option value="7">7. 结果公布</option>
+                        </select>
+                        <button type="button" class="btn btn-blue" onclick="adminExecuteUpdateStep()" data-i18n="btn_admin_step">完成生命周期更迭</button>
+                    </div>
+
+                    <h4 style="color: var(--primary-blue); margin-bottom: 0.8rem; font-weight:700;" data-i18n="lbl_admin_audit_zone">🔍 申请机构填报表单数据高保真质控审查区：</h4>
+                    <div class="admin-review-canvas" id="adminReviewCanvasContainer"></div>
+
+                    <div class="form-group" style="border-top: 1px solid var(--border-color); padding-top:1.5rem;">
+                        <label style="color: var(--warning-amber); font-weight:700;" data-i18n="lbl_admin_opinion">✍️ 秘书处内审专家意见与结论文书：</label>
+                        <textarea class="form-control" id="txtAdminReportArea" rows="6"></textarea>
+                    </div>
+                    <div style="display:flex; gap:1rem; justify-content:flex-end;">
+                        <button type="button" class="btn btn-outline" onclick="adminSaveReviewOnly()" data-i18n="btn_admin_save">暂存评审意见</button>
+                        <button type="button" class="btn btn-green" onclick="adminSubmitToNextStep()" data-i18n="btn_admin_next">提交进入下一步</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="background-color: #e2e8f0; color: var(--text-muted); border-top: 1px solid var(--border-color); text-align: center; padding: 2rem; margin-top: 5rem;">
+        <h2>深圳市粤港澳大湾区联合家庭医学评审评价研究中心 (GBA-FM-ARC)</h2>
+        <p>The GBA Family Medicine Accreditation & Research Center (Shenzhen)</p>
+    </footer>
+
+    <script>
+        const i18n_dictionary = {
+            'zh-CN': {
+                'sys_title': 'APEX 国际基层医疗机构认证综合管理平台',
+                'role_init': '角色定位：申请机构登录',
+                'logout_btn': '【安全退出系统】',
+                'gate_tab_app': '申请机构登录',
+                'gate_tab_sec': '管理后台',
+                'login_acc_lbl': '登录账号 / 电子邮箱',
+                'login_acc_ph': '请输入您的申办邮箱',
+                'login_pass_lbl': '登录密码',
+                'login_pass_ph': '请输入账号密码',
+                'login_btn': '立即登录系统',
+                'reg_prompt': '尚未开设认证账户？',
+                'reg_link': '【点击注册账户】',
+                'reg_title': '注册 APEX 认证申请账户',
+                'reg_org_lbl': '拟申办医疗机构全称（中文）',
+                'reg_org_ph': '请与执业许可证红印全称保持一致',
+                'reg_email_lbl': '设置登录邮箱/账号',
+                'reg_pass_lbl': '设置系统安全密码',
+                'reg_btn': '注册账户',
+                'reg_back': '返回登录界面',
+                'sec_acc_lbl': '管理后台账号',
+                'sec_acc_ph': '请输入管理后台账号',
+                'sec_pass_lbl': '管理后台密码',
+                'sec_pass_ph': '请输入管理后台密码',
+                'sec_login_btn': '进入中央控制后台',
+                'flow_hdr': '🧭 机构 APEX 正式认证生命周期全流程实时跟踪看板',
+                'f_n1': '申请咨询', 'f_n2': '提交申请', 'f_n3': '文件初审', 'f_n4': '签约缴费', 'f_n5': '文件审核', 'f_n6': '现场评估', 'f_n7': '结果公布',
+                'rep_hdr': '📜 FMARC 标准委员会评审等级与终审报告公告',
+                'form_hdr_txt': '关于 APEX 国际基层医疗机构认证标准申报与填报承诺',
+                'form_hdr_desc': 'APEX (International Accreditation for Primary Care Excellence) 国际基层医疗机构认证标准由FMARC发起。请依据《APEX国际基层医疗机构认证标准》各章节要求如实进行填报。',
+                'w_t1': '第（一）部分：机构基本信息',
+                'w_t2': '第（二）部分：内审员信息',
+                'w_t3': '第（三）部分：详细信息申报',
+                'w_t4': '第（四）部分：佐证文件清单',
+                'w_t5': '第（五）部分：申请确认',
+                'lbl_org_cn': '医疗机构全称（中文）', 'lbl_org_en': '医疗机构全称（英文）',
+                'lbl_social_code': '统一社会信用代码 / 商业登记证编号', 'lbl_license_reg': '医疗执业许可证登记号',
+                'lbl_org_type': '机构类型',
+                'opt_t1': '公立医院全科医学部 / 家庭医学门诊', 'opt_t2': '私立医院全科医学部 / 家庭医学门诊', 'opt_t3': '社区卫生服务中心/站', 'opt_t4': '乡镇卫生院', 'opt_t5': '家庭医生/全科诊所（医疗集团、合资）', 'opt_t6': '家庭医生/全科诊所（独资）',
+                'lbl_address': '机构地址', 'lbl_area': '总占地面积（平方米）', 'lbl_phone': '机构联系电话', 'lbl_pop': '服务常驻人口数（人）', 'lbl_site': '机构官网', 'lbl_legal': '机构法人/负责人姓名', 'lbl_open_date': '机构开业日期', 'lbl_work_hours': '机构开放时间', 'lbl_intl_cert': '是否已有其他国际认证',
+                'yes': '是', 'no': '否',
+                'auditor_desc': '说明：内审员为本机构内部负责质量管理、自评、文件准备及与FMARC对接的主要联系人，应具备质量管理或医疗管理相关培训背景。',
+                'lbl_aud_cn': '内审员姓名（中文）', 'lbl_aud_en': '内审员姓名（英文）', 'lbl_aud_title': '机构内职务', 'lbl_aud_duty': '主要职责简述',
+                'h_sub_lic': '1. 服务机构资质与管理标准 - 机构资质', 'lbl_sub_lic': '医疗执业许可证编号（商业登记证编号）', 'lbl_sub_lic_sub': '诊疗科目', 'lbl_sub_lic_auth': '发证机关', 'lbl_sub_lic_exp': '有效期至',
+                'h_org_duty': '2. 组织架构与职责', 'th_post': '岗位名称', 'th_name': '姓名', 'th_duty': '主要职责简要说明',
+                'p_post1': '法定代表人 / 董事', 'p_post2': '医疗主管', 'p_post3': '护理主管', 'p_post4': '质量与安全负责人', 'p_post5': '服务协调负责人（保险、转诊等）',
+                'h_infra': '3. 基础设施与功能区详情', 'infra_note': '* 请提供单个空间的面积，例如全科诊室，应填写单个诊室（最常用）的面积。', 'th_zone_name': '功能区名称', 'th_qty': '数量', 'th_size': '面积(m2)', 'th_usage': '主要用途与提供的服务',
+                'h_sops_sec': '4. 管理制度（SOP）', 'th_sop_title': '制度名称', 'th_sop_doc': '文件名称 / 对应章节', 'th_sop_status': '当前状态', 'th_sop_owner': '执行负责人(姓名和职务)',
+                'h_staff_req': '5. 服务人员资质与能力要求', 'lbl_staff_dr': '（1）家庭医生/全科医生',
+                'lbl_dr_total': '全科医生总数（名）', 'lbl_dr_nl': '内地注册医生（名）', 'lbl_dr_hk': '香港注册医生（名）', 'lbl_dr_mo': '澳门与其它地区注册医生（名）', 'lbl_dr_exp': '临床经验 &ge; 3年的医生占比（%）',
+                'lbl_staff_ns': '（2）护理人员', 'lbl_ns_total': '全科护士总数（名）', 'lbl_ns_nl': '内地注册护士（名）', 'lbl_ns_hk': '香港注册护士（名）', 'lbl_ns_mo': '澳门与其它地区注册护士（名）', 'lbl_ns_exp': '临床经验 &ge; 3年的护士占比（%）',
+                'lbl_staff_aux': '（3）其他辅助人员统计数（名）', 'aux_1': '药师', 'aux_2': '公卫医师', 'aux_3': '健康管理师', 'aux_4': '营养师', 'aux_5': '康复治疗师', 'aux_6': '心理咨询师', 'aux_7': '前台 / 接待人员', 'aux_8': '陪诊员', 'aux_9': '其他',
+                'lbl_staff_lang': '（4）语言能力', 'lbl_lang_main': '主要语种', 'l_zh': '普通话', 'l_canton': '粤语', 'l_en': '英语', 'l_other': '其他语种', 'lbl_eng_dr': '能提供英语服务医生占比(%)', 'lbl_eng_ns': '能提供英语服务护士占比(%)', 'lbl_eng_front': '能提供英语服务前台占比(%)',
+                'lbl_staff_cpd': '（5）持续专业发展与培训（CPD）', 'lbl_has_plan': '是否有制定培训计划', 'lbl_cpd_count': '平均组织培训场次', 'lbl_intl_count': '过去1年国际课程人数', 'lbl_psy_channel': '是否有心理支持沟通渠道及相关措施', 'lbl_has_satisfaction': '是否有开展员工满意度调查？',
+                'h_srv_prov': '6. 服务内容与提供方式申报', 'th_srv_project': '服务项目', 'th_prov_method': '提供方式', 'th_srv_owner': '服务负责人 / 协作机构全称',
+                'h_local_ref': '（2）本地转诊网络配置', 'th_ref_org': '机构名称', 'th_ref_type': '机构类型', 'th_ref_reason': '主要转诊原因 / 服务项目',
+                'h_net_hospital_sec': '（3）线上互联网医院服务详情', 'lbl_has_net_qual': '是否取得互联网诊疗资质', 'lbl_net_hours': '线上开诊服务时间', 'opt_h1': '7&times;24小时', 'opt_h2': '固定时段', 'opt_h3': '预约制', 'lbl_net_platform': '主要服务平台及链接',
+                'h_pay_sec': '（4）支付形式', 'lbl_pay_support': '机构支持的支付方式',
+                'h_cross_sec': '（5）跨境医疗服务网络', 'lbl_has_cross': '是否提供跨境服务', 'th_cross_org': '机构名称', 'th_cross_loc': '所在地', 'th_cross_type': '机构类型', 'th_cross_content': '主要协作内容',
+                'h_safety_audit': '7. 患者安全与数据管理自评', 'th_safe_project': '自评审查项目', 'th_safe_req': '具体评审指标', 'th_safe_eval': '机构自评',
+                'h_qc_sec': '8. 服务质量控制管理', 'lbl_qc_in': '（1）内部质量控制活动数据（过去12个月记录）', 'th_qc_type': '质量控制类型', 'th_qc_count': '开展次数', 'th_qc_method': '具体的质控方法', 'th_qc_owner': '负责人',
+                'lbl_qc_ex': '（2）外部评价与患者反馈', 'th_ex_type': '外部质控类型', 'th_ex_count': '开展次数', 'th_ex_rep': '总收集反馈数量（份）', 'th_ex_method': '采集方法',
+                'lbl_qc_comp': '（3）投诉与反馈处理', 'lbl_comp_channel': '投诉沟通反馈渠道', 'lbl_comp_val': '过去12个月内共收集多少单患者投诉案例？', 'lbl_resolved_val': '当中已受理并顺利解决的案例占比为？（%）',
+                'lbl_qc_app': '（4）质控数据应用（双闭环案例简述）', 'lbl_case1': '案例（1）：', 'lbl_case2': '案例（2）：', 'lbl_case_src': '数据问题来源', 'lbl_case_p': '识别问题', 'lbl_case_m': '计划措施', 'lbl_case_a': '改进行动', 'lbl_case_v': '效果验证', 'lbl_case_r': '最终结果', 'lbl_case_o': '主要负责人',
+                'th_file_desc': '佐证文件清单', 'th_file_status': '自查状态', 'th_file_input': '模拟上传文件名', 'doc_desc_sec': '（必要项）附件文件电子版随本表一并递交系统绑定归档，原件留底备查。',
+                'chk_commit_agree': '我单位已完全阅读并签署承诺公函', 'lbl_expect_date': '期望现场评审日期', 'lbl_rep_sign': '法定代表人（亲笔签字确认）', 'lbl_formal_date': '正式提报日期',
+                'btn_save_draft': '暂存申报资料卡', 'btn_formal_sub': '正式锁定并提交申请',
+                'admin_hdr': 'FMARC 认证管理后台控制舱', 'admin_list_hdr': '机构信息提报序列', 'admin_panel_init': '请在左侧列表中选定申办单位开展评审核验', 'lbl_admin_step_update': '🔄 推进该机构认证项目所处的 APEX 生命周期流程节点：', 'btn_admin_step': '完成生命周期更迭', 'lbl_admin_audit_zone': '🔍 申请机构填报表单数据高保真质控审查区：', 'lbl_admin_opinion': '✍️ 秘书处内审专家意见与结论文书：', 'btn_admin_save': '暂存评审意见', 'btn_admin_next': '提交进入下一步'
+            },
+            'zh-TW': {
+                'sys_title': 'APEX 國際基層醫療機構認證綜合管理平台',
+                'role_init': '角色定位：申請機構登錄',
+                'logout_btn': '【安全退出系統】',
+                'gate_tab_app': '申請機構登錄',
+                'gate_tab_sec': '管理后台',
+                'login_acc_lbl': '登錄賬號 / 電子郵箱',
+                'login_acc_ph': '請輸入您的申辦郵箱',
+                'login_pass_lbl': '登錄密碼',
+                'login_pass_ph': '請輸入賬號密碼',
+                'login_btn': '立即登錄系統',
+                'reg_prompt': '尚未開設認證賬戶？',
+                'reg_link': '【點擊註冊賬戶】',
+                'reg_title': '註冊 APEX 認證申請賬戶',
+                'reg_org_lbl': '擬申辦醫療機構全稱（中文）',
+                'reg_org_ph': '請與執業許可證紅印全稱保持一致',
+                'reg_email_lbl': '設置登錄郵箱/賬號',
+                'reg_pass_lbl': '設置系統安全密碼',
+                'reg_btn': '註冊賬戶',
+                'reg_back': '返回登錄界面',
+                'sec_acc_lbl': '管理後台賬號',
+                'sec_acc_ph': '請輸入管理後台賬號',
+                'sec_pass_lbl': '管理後台密碼',
+                'sec_pass_ph': '請輸入管理後台密碼',
+                'sec_login_btn': '進入中央控制後台',
+                'flow_hdr': '🧭 機構 APEX 正式認證生命週期全流程實時跟蹤看板',
+                'f_n1': '申請諮詢', 'f_n2': '提交申請', 'f_n3': '文件初審', 'f_n4': '簽約繳費', 'f_n5': '文件審核', 'f_n6': '現場評估', 'f_n7': '結果公布',
+                'rep_hdr': '📜 FMARC 標準委員會評審等級與終審報告公告',
+                'form_hdr_txt': '關於 APEX 國際基層醫療機構認證標準申報與填報承諾',
+                'form_hdr_desc': 'APEX (International Accreditation for Primary Care Excellence) 國際基層醫療機構認證標準由FMARC發起。請依據《APEX國際基層醫療機構認證標準》各章節要求如實進行填報。',
+                'w_t1': '第（一）部分：機構基本信息',
+                'w_t2': '第（二）部分：內審員信息',
+                'w_t3': '第（三）部分：詳細信息申報',
+                'w_t4': '第（四）部分：佐證文件清單',
+                'w_t5': '第（五）部分：申請確認',
+                'lbl_org_cn': '醫療機構全稱（中文）', 'lbl_org_en': '醫療機構全称（英文）',
+                'lbl_social_code': '統一社會信用代碼 / 商業登記證編號', 'lbl_license_reg': '醫療執業許可證登記號',
+                'lbl_org_type': '機構類型',
+                'opt_t1': '公立醫院全科醫學部 / 家庭醫療門診', 'opt_t2': '私立醫院全科醫學部 / 家庭醫療門診', 'opt_t3': '社區衛生服務中心/站', 'opt_t4': '鄉鎮衛生院', 'opt_t5': '家庭醫生/全科診所（醫療集團、合資）', 'opt_t6': '家庭醫生/全科診所（獨資）',
+                'lbl_address': '機構地址', 'lbl_area': '總占地面積（平方米）', 'lbl_phone': '機構聯繫電話', 'lbl_pop': '服務常駐人口數（人）', 'lbl_site': '機構官網', 'lbl_legal': '機構法人/負責人姓名', 'lbl_open_date': '機構開業日期', 'lbl_work_hours': '機構開放時間', 'lbl_intl_cert': '是否已有其他國際認證',
+                'yes': '是', 'no': '否',
+                'auditor_desc': '說明：內審員為本機構內部負責質量管理、自評、文件準備及與FMARC對接的主要聯繫人，應具備質量管理或醫療管理相關培訓背景。',
+                'lbl_aud_cn': '內審員姓名（中文）', 'lbl_aud_en': '內審員姓名（英文）', 'lbl_aud_title': '機構內職務', 'lbl_aud_duty': '主要職責簡述',
+                'h_sub_lic': '1. 服務機構資質與管理標準 - 機構資質', 'lbl_sub_lic': '醫療執業許可證編號（商業登記證編號）', 'lbl_sub_lic_sub': '診療科目', 'lbl_sub_lic_auth': '發證機關', 'lbl_sub_lic_exp': '有效期至',
+                'h_org_duty': '2. 組織架構與職責', 'th_post': '崗位名稱', 'th_name': '姓名', 'th_duty': '主要職責簡要說明',
+                'p_post1': '法定代表人 / 董事', 'p_post2': '醫療主管', 'p_post3': '護理主管', 'p_post4': '質量與安全負責人', 'p_post5': '服務協调負責人（保險、轉診等）',
+                'h_infra': '3. 基礎設施與功能區詳情', 'infra_note': '* 請提供單個空間的面積，例如全科診室，應填寫單个診室（最常用）的面積。', 'th_zone_name': '功能區名稱', 'th_qty': '數量', 'th_size': '面積(m2)', 'th_usage': '主要用途與提供的服務',
+                'h_sops_sec': '4. 管理制度（SOP）', 'th_sop_title': '制度名稱', 'th_sop_doc': '文件名稱 / 對應章節', 'th_sop_status': '當前狀態', 'th_sop_owner': '執行負責人(姓名和職務)',
+                'h_staff_req': '5. 服務人員資質與能力要求', 'lbl_staff_dr': '（1）家庭醫生/全科醫生',
+                'lbl_dr_total': '全科醫生總數（名）', 'lbl_dr_nl': '內地註冊醫生（名）', 'lbl_dr_hk': '香港註冊醫生（名）', 'lbl_dr_mo': '澳門與其它地區註冊醫生（名）', 'lbl_dr_exp': '臨床經驗 &ge; 3年的醫生占比（%）',
+                'lbl_staff_ns': '（2）護理人員', 'lbl_ns_total': '全科護士總數（名）', 'lbl_ns_nl': '內地註冊護士（名）', 'lbl_ns_hk': '香港註冊護士（名）', 'lbl_ns_mo': '澳門與其它地區註冊護士（名）', 'lbl_ns_exp': '臨床經驗 &ge; 3年的護士占比（%）',
+                'lbl_staff_aux': '（3）其他輔助人員統計數（名）', 'aux_1': '藥師', 'aux_2': '公衛醫師', 'aux_3': '健康管理師', 'aux_4': '營養師', 'aux_5': '康復治療師', 'aux_6': '心理諮詢師', 'aux_7': '前台 / 接待人員', 'aux_8': '陪診員', 'aux_9': '其他',
+                'lbl_staff_lang': '（4）語言能力', 'lbl_lang_main': '主要語種', 'l_zh': '普通話', 'l_canton': '粵語', 'l_en': '英語', 'l_other': '其他語種', 'lbl_eng_dr': '能提供英語服務醫生占比(%)', 'lbl_eng_ns': '能提供英語服務護士占比(%)', 'lbl_eng_front': '能提供英語服務前台占比(%)',
+                'lbl_staff_cpd': '（5）持續專業發展與培訓（CPD）', 'lbl_has_plan': '是否有制定培訓計劃', 'lbl_cpd_count': '平均組織培訓場次', 'lbl_intl_count': '過去1年國際課程人數', 'lbl_psy_channel': '是否有心理支持溝通渠道及相關措施', 'lbl_has_satisfaction': '是否有開展員工滿意度調查？',
+                'h_srv_prov': '6. 服務內容與提供方式申報', 'th_srv_project': '服務項目', 'th_prov_method': '提供方式', 'th_srv_owner': '服務負責人 / 協作機構全稱',
+                'h_local_ref': '（2）本地轉診網絡配置', 'th_ref_org': '機構名稱', 'th_ref_type': '機構類型', 'th_ref_reason': '主要轉診原因 / 服務項目',
+                'h_net_hospital_sec': '（3）線上互聯網醫院服務詳情', 'lbl_has_net_qual': '是否取得互聯網診療資質', 'lbl_net_hours': '線上開診服務時間', 'opt_h1': '7&times;24小時', 'opt_h2': '固定時段', 'opt_h3': '預約制', 'lbl_net_platform': '主要服務平台及鏈接',
+                'h_pay_sec': '（4）支付形式', 'lbl_pay_support': '機構支持的支付方式',
+                'h_cross_sec': '（5）跨境醫療服務網絡', 'lbl_has_cross': '是否提供跨境服務', 'th_cross_org': '機構名稱', 'th_cross_loc': '所在地', 'th_cross_type': '機構類型', 'th_cross_content': '主要協作內容',
+                'h_safety_audit': '7. 患者安全與數據管理自評', 'th_safe_project': '自評審查項目', 'th_safe_req': '具體評審指標', 'th_safe_eval': '機構自評',
+                'h_qc_sec': '8. 服務質量控制管理', 'lbl_qc_in': '（1）內部質量控制活動數據（過去12個月記錄）', 'th_qc_type': '質量控制類型', 'th_qc_count': '開展次數', 'th_qc_method': '具體的質控方法', 'th_qc_owner': '負責人',
+                'lbl_qc_ex': '（2）外部評價與患者反饋', 'th_ex_type': '外部質控類型', 'th_ex_count': '開展次數', 'th_ex_rep': '總收集反饋數量（份）', 'th_ex_method': '采集方法',
+                'lbl_qc_comp': '（3）投訴與反饋處理', 'lbl_comp_channel': '投訴溝通反饋渠道', 'lbl_comp_val': '過去12個月內共收集多少單患者投訴案例？', 'lbl_resolved_val': '當中已受理並順利解決的案例占比為？（%）',
+                'lbl_qc_app': '（4）質控數據應用（雙閉環案例簡述）', 'lbl_case1': '案例（1）：', 'lbl_case2': '案例（2）：', 'lbl_case_src': '數據問題來源', 'lbl_case_p': '識別問題', 'lbl_case_m': '計劃措施', 'lbl_case_a': '改進行動', 'lbl_case_v': '效果驗證', 'lbl_case_r': '最終結果', 'lbl_case_o': '主要負責人',
+                'th_file_desc': '佐證文件清單', 'th_file_status': '自查狀態', 'th_file_input': '模擬上傳文件名', 'doc_desc_sec': '（必要項）附件文件電子版隨本表一並遞交系統綁定歸檔，原件留底備查。',
+                'chk_commit_agree': '我單位已完全閱讀並簽署承諾公函', 'lbl_expect_date': '期望現場評審日期', 'lbl_rep_sign': '法定代表人（親筆簽字確認）', 'lbl_formal_date': '正式提報日期',
+                'btn_save_draft': '暫存申報資料卡', 'btn_formal_sub': '正式鎖定並提交申請',
+                'admin_hdr': 'FMARC 認證管理後台控制艙', 'admin_list_hdr': '機構信息提報序列', 'admin_panel_init': '請在左側列表中選定申辦單位開展評審核驗', 'lbl_admin_step_update': '🔄 推進該機構認證項目所處的 APEX 生命週期流程節點：', 'btn_admin_step': '完成生命週期更迭', 'lbl_admin_audit_zone': '🔍 申請機構填報表單數據高保真質控審查區：', 'lbl_admin_opinion': '✍️ 秘書處內審專家意見與結論文書：', 'btn_admin_save': '暫存評審意見', 'btn_admin_next': '提交進入下一步'
+            },
+            'en': {
+                'sys_title': 'APEX International Primary Care Accreditation Platform',
+                'role_init': 'Role: Applicant Account Login',
+                'logout_btn': '【Logout】',
+                'gate_tab_app': 'Applicant Login',
+                'gate_tab_sec': 'Management',
+                'login_acc_lbl': 'Login Account / Email',
+                'login_acc_ph': 'Enter your registered email',
+                'login_pass_lbl': 'Password',
+                'login_pass_ph': 'Enter password',
+                'login_btn': 'Login System',
+                'reg_prompt': 'No account yet? ',
+                'reg_link': '【Register Now】',
+                'reg_title': 'Register APEX Application Account',
+                'reg_org_lbl': 'Full Institution Name (Chinese)',
+                'reg_org_ph': 'Must match your medical license exactly',
+                'reg_email_lbl': 'Email / Username',
+                'reg_pass_lbl': 'Set Account Password',
+                'reg_btn': 'Register',
+                'reg_back': 'Back to Login',
+                'sec_acc_lbl': 'Admin Account',
+                'sec_acc_ph': 'Enter admin account ID',
+                'sec_pass_lbl': 'Admin Password',
+                'sec_pass_ph': 'Enter admin password',
+                'sec_login_btn': 'Access Admin Console',
+                'flow_hdr': '🧭 Live Lifecycle Progress Tracking Board for APEX Certification',
+                'f_n1': 'Consultation', 'f_n2': 'Application', 'f_n3': 'Initial Audit', 'f_n4': 'Payment', 'f_n5': 'Doc Audit', 'f_n6': 'On-site Eval', 'f_n7': 'Result',
+                'rep_hdr': '📜 FMARC Standard Committee Final Review Report公报',
+                'form_hdr_txt': 'About APEX Certification Form Submission & Commitment Statement',
+                'form_hdr_desc': 'APEX (International Accreditation for Primary Care Excellence) is initiated by FMARC. Please fill in the details strictly according to standard criteria.',
+                'w_t1': 'Part I: Basic Information',
+                'w_t2': 'Part II: Internal Auditor Info',
+                'w_t3': 'Part III: Detailed Declaration',
+                'w_t4': 'Part IV: Evidence Checklists',
+                'w_t5': 'Part V: Final Confirmation',
+                'lbl_org_cn': 'Institution Name (Chinese)', 'lbl_org_en': 'Institution Name (English)',
+                'lbl_social_code': 'Unified Social Credit Code / Business Reg No.', 'lbl_license_reg': 'Medical Institution Practice License No.',
+                'lbl_org_type': 'Institution Type',
+                'opt_t1': 'General Medicine Dept of Public Hospital', 'opt_t2': 'General Medicine Dept of Private Hospital', 'opt_t3': 'Community Health Center/Station', 'opt_t4': 'Township Health Center', 'opt_t5': 'Family Doctor/GP Clinic (Group/JV)', 'opt_t6': 'Family Doctor/GP Clinic (Sole)',
+                'lbl_address': 'Address', 'lbl_area': 'Total Area (sqm)', 'lbl_phone': 'Contact Number', 'lbl_pop': 'Permanent Population Served', 'lbl_site': 'Official Website', 'lbl_legal': 'Legal Representative Name', 'lbl_open_date': 'Opening Date', 'lbl_work_hours': 'Operating Hours', 'lbl_intl_cert': 'Other International Accreditations Obtained',
+                'yes': 'Yes', 'no': 'No',
+                'auditor_desc': 'Note: Internal auditors are primary coordinators responsible for internal quality management, self-assessment, and liaison with FMARC.',
+                'lbl_aud_cn': 'Auditor Name (Chinese)', 'lbl_aud_en': 'Auditor Name (English)', 'lbl_aud_title': 'Position', 'lbl_aud_duty': 'Brief Summary of Main Duties',
+                'h_sub_lic': '1. Institution Qualification & Management Criteria - Qualification', 'lbl_sub_lic': 'Medical Practice License ID (Business Registration No.)', 'lbl_sub_lic_sub': 'Clinical Specialties', 'lbl_sub_lic_auth': 'Issuing Authority', 'lbl_sub_lic_exp': 'Valid Until',
+                'h_org_duty': '2. Organizational Structure & Core Responsibilities', 'th_post': 'Position Role', 'th_name': 'Name', 'th_duty': 'Main Duties Overview',
+                'p_post1': 'Legal Representative / Director', 'p_post2': 'Medical Director', 'p_post3': 'Nursing Director', 'p_post4': 'Quality & Safety Officer', 'p_post5': 'Service Coordination Officer (Insurance, Referrals)',
+                'h_infra': '3. Infrastructure & Functional Zones Matrix', 'infra_note': '* Please provide individual room sizes (e.g. single consulting room area commonly used).', 'th_zone_name': 'Zone Name', 'th_qty': 'Qty', 'th_size': 'Area (m2)', 'th_usage': 'Main Usage & Services Provided',
+                'h_sops_sec': '4. Standard Operating Procedures (SOPs)', 'th_sop_title': 'SOP Title', 'th_sop_doc': 'Document Name / Chapter Reference', 'th_sop_status': 'Current Status', 'th_sop_owner': 'Person in Charge (Name & Title)',
+                'h_staff_req': '5. Personnel Qualifications & Clinical Capability', 'lbl_staff_dr': '(1) Family Doctors / GPs',
+                'lbl_dr_total': 'Total GPs (Qty)', 'lbl_dr_nl': 'Mainland Registered', 'lbl_dr_hk': 'Hong Kong Registered', 'lbl_dr_mo': 'Macau & Others Registered', 'lbl_dr_exp': 'GPs with &ge; 3 Years Clinical Exp (%)',
+                'lbl_staff_ns': '(2) Nursing Staff', 'lbl_ns_total': 'Total Nurses (Qty)', 'lbl_ns_nl': 'Mainland Registered', 'lbl_ns_hk': 'Hong Kong Registered', 'lbl_ns_mo': 'Macau & Others Registered', 'lbl_ns_exp': 'Nurses with &ge; 3 Years Clinical Exp (%)',
+                'lbl_staff_aux': '(3) Allied Health & Auxiliary Staff Statistics (Qty)', 'aux_1': 'Pharmacist', 'aux_2': 'Public Health Doctor', 'aux_3': 'Health Manager', 'aux_4': 'Nutritionist', 'aux_5': 'Rehabilitation Therapist', 'aux_6': 'Psychological Counselor', 'aux_7': 'Receptionist', 'aux_8': 'Chaperone', 'aux_9': 'Others',
+                'lbl_staff_lang': '(4) Language Capability', 'lbl_lang_main': 'Core Languages Provided', 'l_zh': 'Mandarin', 'l_canton': 'Cantonese', 'l_en': 'English', 'l_other': 'Others', 'lbl_eng_dr': 'English-capable GPs (%)', 'lbl_eng_ns': 'English-capable Nurses (%)', 'lbl_eng_front': 'English-capable Receptionists (%)',
+                'lbl_staff_cpd': '(5) Continuing Professional Development (CPD)', 'lbl_has_plan': 'Annual Training Plan Formulated', 'lbl_cpd_count': 'Avg Internal Trainings Organized', 'lbl_intl_count': 'Staff Attended Int\'l Courses in Past Year', 'lbl_psy_channel': 'Feedback/Psychological Channels for Staff', 'lbl_has_satisfaction': 'Regular Staff Satisfaction Survey Conducted',
+                'h_srv_prov': '6. Service Framework & Delivery Declaration', 'th_srv_project': 'Service Item', 'th_prov_method': 'Delivery Method', 'th_srv_owner': 'Department Head / Partner Network Name',
+                'h_local_ref': '(2) Local Referral Network Configuration', 'th_ref_org': 'Institution Name', 'th_ref_type': 'Type', 'th_ref_reason': 'Main Referral Reason / Items',
+                'h_net_hospital_sec': '(3) Online Internet Hospital Service Framework', 'lbl_has_net_qual': 'Internet Hospital Practice License Obtained', 'lbl_net_hours': 'Online Consultation Operating Hours', 'opt_h1': '7&times;24 Hours', 'opt_h2': 'Fixed Hours', 'opt_h3': 'By Appointment', 'lbl_net_platform': 'Main Digital Platforms & Links',
+                'h_pay_sec': '(4) Payment Methods Supported', 'lbl_pay_support': 'Payment Formats available',
+                'h_cross_sec': '(5) Cross-border Care Coordination (Mainland, HK, Macau)', 'lbl_has_cross': 'Cross-border Services Provided', 'th_cross_org': 'Institution Name', 'th_cross_loc': 'Location', 'th_cross_type': 'Type', 'th_cross_content': 'Main Collaboration Details',
+                'h_safety_audit': '7. Patient Safety & Data Protection Self-Assessment Matrix', 'th_safe_project': 'Self-Assessment Domain', 'th_safe_req': 'Audit Requirement Detailed', 'th_safe_eval': 'Self Evaluation',
+                'h_qc_sec': '8. Quality Control & Clinical Governance', 'lbl_qc_in': '(1) Internal Quality Control Activities (Past 12 Months)', 'th_qc_type': 'QC Type', 'th_qc_count': 'Sessions', 'th_qc_method': 'Specific Methodology applied', 'th_qc_owner': 'In Charge',
+                'lbl_qc_ex': '(2) External Reviews & Patient Feedback loops', 'th_ex_type': 'External Review Type', 'th_ex_count': 'Sessions', 'th_ex_rep': 'Total Reports Collected', 'th_ex_method': 'Methodology',
+                'lbl_qc_comp': '(3) Complaints & Incident Feedback loops', 'lbl_comp_channel': 'Feedback Channels deployed', 'lbl_comp_val': 'Total complaints cases collected in past 12 mos', 'lbl_resolved_val': 'Resolution and successful processing rate (%)',
+                'lbl_qc_app': '(4) PDCA Continuous Improvements Data (Double-loop case summaries)', 'lbl_case1': 'Case (1):', 'lbl_case2': 'Case (2):', 'lbl_case_src': 'Data Problem Source', 'lbl_case_p': 'Problem Identified', 'lbl_case_m': 'Planned Countermeasures', 'lbl_case_a': 'Key Actions Implemented', 'lbl_case_v': 'Effect Verification', 'lbl_case_r': 'Final Outcome', 'lbl_case_o': 'Main Owner',
+                'th_file_desc': '佐证文件清单 Evidence Checklist', 'th_file_status': 'Status', 'th_file_input': 'Mock File Name input', 'doc_desc_sec': '(Mandatory) Electronic versions must be uploaded with this application form for records.',
+                'chk_commit_agree': 'Our organization fully reads and accepts the commitment guidelines.', 'lbl_expect_date': 'Expected On-site Evaluation Date', 'lbl_rep_sign': 'Legal Representative Signature', 'lbl_formal_date': 'Date of Submission',
+                'btn_save_draft': 'Save Draft Data', 'btn_formal_sub': 'Lock and Submit Final Application',
+                'admin_hdr': 'FMARC Accreditation Management Console', 'admin_list_hdr': 'Applicant Institution Queues', 'admin_panel_init': 'Select an applicant institution from the left queue to evaluate.', 'lbl_admin_step_update': '🔄 Advance or Update the APEX Lifecycle Progress Status:', 'btn_admin_step': 'Update Status', 'lbl_admin_audit_zone': '🔍 High-fidelity Applicant Form Data Deep Review Workspace:', 'lbl_admin_opinion': '✍️ Secretariat Auditor Evaluation Opinions & Official Announcement Editor:', 'btn_admin_save': 'Save Audit Notes', 'btn_admin_next': 'Approve and Advance'
+            }
+        };
+
+        // 全局语言切换控制引擎线
+        let currentSystemLanguage = 'zh-CN';
+
+        function executeLanguageSwitch(langCode) {
+            currentSystemLanguage = langCode;
+            document.getElementById('langSelectDropdown').value = langCode;
+
+            // 1. 遍历替换带有 data-i18n 属性的普通静态文本
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(i18n_dictionary[langCode] && i18n_dictionary[langCode][key]) {
+                    el.innerHTML = i18n_dictionary[langCode][key];
+                }
+            });
+
+            // 2. 遍历替换输入框占位符 data-i18n-placeholder
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if(i18n_dictionary[langCode] && i18n_dictionary[langCode][key]) {
+                    el.setAttribute('placeholder', i18n_dictionary[langCode][key]);
+                }
+            });
+
+            // 3. 彻底动态重布、刷新由于多语言变动所需的动态数据表格（15项SOP、9类核心服务等）
+            // 注意：重布表格时要无损锁存、保留用户已经填写过的数据
+            const backupData = extractUIFormToObj();
+            buildDynamicFormTables();
+            fillGlobalFormDataToUI(backupData);
+
+            if(sessionUserKey && sessionUserKey !== 'admin_session') {
+                getInstitutionFromDB(sessionUserKey, function(uData) {
+                    if(uData) document.getElementById('lblApplicantHeader').innerText = (langCode === 'en' ? 'Welcome: ' : '欢迎您，') + uData.orgName;
+                });
+            }
+        }
+    </script>
+
+    <script>
+        let sessionUserKey = null; // 当前登录用户的 localStorage key
+        let currentGateTab = 'applicant';
+        let currentWizardTab = 1;
+        let adminSelectedUserKey = null; // 秘书处当前选中的申办方
+        let dbInstance = null; // IndexedDB 实例对象
+
+        // 打开并部署本地 IndexedDB 空间
+        function initIndexedDBEngine() {
+            const request = window.indexedDB.open("FmarcApexDB", 1);
+            request.onerror = function(event) {
+                console.error("IndexedDB 内核初始化障碍:", event.target.errorCode);
+            };
+            request.onupgradeneeded = function(event) {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains("institutions")) {
+                    db.createObjectStore("institutions", { keyPath: "account" });
+                }
+            };
+            request.onsuccess = function(event) {
+                dbInstance = event.target.result;
+                console.log("🏆 IndexedDB 核心数据库引擎挂载激活成功。");
+                injectDemoDataIfEmpty();
+            };
+        }
+
+        function saveInstitutionToDB(userData, callback) {
+            if (!dbInstance) {
+                localStorage.setItem(userData.account, JSON.stringify(userData));
+                if(callback) callback(); return;
+            }
+            const transaction = dbInstance.transaction(["institutions"], "readwrite");
+            const objectStore = transaction.objectStore("institutions");
+            const request = objectStore.put(userData);
+            request.onsuccess = function() { if(callback) callback(); };
+        }
+
+        function getInstitutionFromDB(account, callback) {
+            if (!dbInstance) {
+                const raw = localStorage.getItem(account);
+                callback(raw ? JSON.parse(raw) : null); return;
+            }
+            const transaction = dbInstance.transaction(["institutions"], "readonly");
+            const objectStore = transaction.objectStore("institutions");
+            const request = objectStore.get(account);
+            request.onsuccess = function(event) { callback(event.target.result || null); };
+        }
+
+        function injectDemoDataIfEmpty() {
+            getInstitutionFromDB("demo@hospital.com", function(res) {
+                if(!res) {
+                    const mockObj = {
+                        account: 'demo@hospital.com', password: '123',
+                        orgName: '大湾区整合型高品质全科社康中心案例网点',
+                        progressStep: 1, reportText: '', formSubmitted: false, formData: {}
+                    };
+                    saveInstitutionToDB(mockObj);
+                }
+            });
+        }
+
+        // 视图导航网闸切换
+        function switchView(viewId) {
+            document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
+            document.getElementById('viewGate').style.display = 'none';
+            document.getElementById('userInfoBar').style.display = 'none';
+
+            if (viewId === 'gate') {
+                document.getElementById('viewGate').style.display = 'block';
+            } else {
+                document.getElementById(viewId).classList.add('active');
+                document.getElementById('userInfoBar').style.display = 'flex';
+            }
+        }
+
+        // 门禁内部 Tab 标签切换
+        function switchGateTab(tab) {
+            currentGateTab = tab;
+            document.getElementById('tabApplicant').classList.remove('active');
+            document.getElementById('tabSecretariat').classList.remove('active');
+            document.getElementById('formApplicantBlock').style.display = 'none';
+            document.getElementById('formRegisterBlock').style.display = 'none';
+            document.getElementById('formSecretariatBlock').style.display = 'none';
+
+            if (tab === 'applicant') {
+                document.getElementById('tabApplicant').classList.add('active');
+                document.getElementById('formApplicantBlock').style.display = 'block';
+                document.getElementById('regPromptBlock').style.display = 'block';
+            } else {
+                document.getElementById('tabSecretariat').classList.add('active');
+                document.getElementById('formSecretariatBlock').style.display = 'block';
+                document.getElementById('regPromptBlock').style.display = 'none';
+            }
+        }
+
+        function toggleRegisterMode(isRegister) {
+            document.getElementById('formApplicantBlock').style.display = isRegister ? 'none' : 'block';
+            document.getElementById('formRegisterBlock').style.display = isRegister ? 'block' : 'none';
+        }
+
+        function performRegistration() {
+            const orgName = document.getElementById('regOrgName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+
+            if (!orgName || !email || !pass) {
+                alert('请配置完整的注册数据。'); return;
+            }
+
+            const userKey = email;
+            getInstitutionFromDB(userKey, function(res) {
+                if(res) { alert('该账户已被注册注册。'); return; }
+                const userData = {
+                    account: email, password: pass, orgName: orgName,
+                    progressStep: 1, reportText: '', formSubmitted: false, formData: {}
+                };
+                saveInstitutionToDB(userData, function() {
+                    alert('🎉 认证申请账户开立注册成功！');
+                    toggleRegisterMode(false);
+                    document.getElementById('appAccount').value = email;
+                });
+            });
+        }
+
+        function performLogin(type) {
+            if (type === 'applicant') {
+                const acc = document.getElementById('appAccount').value.trim();
+                const pass = document.getElementById('appPassword').value.trim();
+                
+                getInstitutionFromDB(acc, function(userData) {
+                    if (!userData || userData.password !== pass) {
+                        alert('账户名不存在或安全密码校验失败。'); return;
+                    }
+                    sessionUserKey = acc;
+                    document.getElementById('txtUserRole').innerText = (currentSystemLanguage==='en'?'Institution: ':'申请机构：') + userData.orgName;
+                    switchView('viewApplicantPortal');
+                    loadApplicantDashboard();
+                });
+
+            } else if (type === 'secretariat') {
+                const acc = document.getElementById('secAccount').value.trim();
+                const pass = document.getElementById('secPassword').value.trim();
+
+                if (acc === 'fmarcadmin' && pass === 'apex2026') {
+                    sessionUserKey = 'admin_session';
+                    document.getElementById('txtUserRole').innerText = currentSystemLanguage==='en'?'Admin Workplace':'内审工作席：管理后台';
+                    switchView('viewSecretariatPortal');
+                    loadSecretariatDashboard();
+                } else {
+                    alert('管理后台防线核验拒绝。 (仿真工号: fmarcadmin / 密码: apex2026)');
+                }
+            }
+        }
+
+        function handleLogout() {
+            sessionUserKey = null;
+            adminSelectedUserKey = null;
+            document.getElementById('appAccount').value = '';
+            document.getElementById('appPassword').value = '';
+            document.getElementById('secAccount').value = '';
+            document.getElementById('secPassword').value = '';
+            switchView('gate');
+            switchGateTab('applicant');
+        }
+
+        /* ================= 申办方业务表单逻辑与多语言联动处理区 ================= */
+        // 三语本地化表格行资源映射对象
+        const sopsLangDict = {
+            'zh-TW': ["服務質量管理體系", "患者安全與風險評估管理體系", "隱私保護與信息安全管理體系", "數據跨境傳輸管理體系", "多語種服務管理規範", "直付服務操作流程", "跨境轉診協調流程", "患者投訴與反饋處理流程", "藥品管理與處方審核制度", "醫療設備管理制度", "緊急醫療事件應急預案", "環境可持續性管理政策", "員工崗前與持續培訓管理辦法", "員工保障與心理安全支持政策", "醫療廢物分類與處置制度", "AI工具臨床應用管理辦法（如適用）"],
+            'en': ["Service Quality Management SOP", "Patient Safety & Risk Evaluation SOP", "Privacy & Info Security SOP", "Cross-border Data Transmission SOP", "Multilingual Service SOP", "Direct Billing Operation Flow", "Cross-border Care Coordination Flow", "Patient Complaint & Feedback Flow", "Medication Management & Prescription Audit", "Medical Equipment Management Policy", "Emergency Medical Incident Preparedness Plan", "Environmental Sustainability Policy", "Staff Pre-job & Continuous Training Method", "Staff Safety & Psychological Support Policy", "Medical Waste Classification & Disposal System", "Clinical AI Tool Application Management Method"]
+        };
+
+        const srvLangDict = {
+            'zh-TW': ["常見病、多發病診療", "慢性病管理", "預防保健服務", "傷口處理、換藥等基礎治療", "常規檢驗檢查", "心理健康諮詢", "居家護理/上門隨訪", "康復指導", "安寧療護"],
+            'en': ["Common & Frequently Occurring Disease Treatment", "Chronic Disease Management", "Preventive Health Care Services", "Basic Treatment (Wound care, dressing change)", "Routine Laboratory & Diagnostic Examinations", "Psychological Health Consultation", "Home Care / Home Follow-up Visit", "Rehabilitation Guidance", "Hospice Care / Palliative Care"]
+        };
+
+        const safeLangDict = {
+            'zh-TW': ["识别患者", "安全用药", "高风险 / 管制药物", "感染控制", "风险评估与防范", "不良事件报告", "环境隐私", "病历隐私", "患者基本权利", "患者知情同意", "信息安全技术", "数据跨境合规", "人工智能管理"],
+            'en': ["Patient Identification", "Safe Medication Flow", "High-risk / Controlled Drugs", "Infection Control (IC)", "Risk Assessment & Mitigation", "Adverse Incident Reporting", "Physical Privacy Protection", "Medical Record Confidentiality", "Patient Basic Rights", "Patient Informed Consent", "Information Security Technology", "Cross-border Data Compliance", "Artificial Intelligence Management"]
+        };
+
+        function loadApplicantDashboard() {
+            getInstitutionFromDB(sessionUserKey, function(userData) {
+                document.getElementById('lblApplicantHeader').innerText = (currentSystemLanguage==='en'?'Welcome: ':'欢迎您，') + userData.orgName;
+                
+                for (let i = 1; i <= 7; i++) {
+                    const node = document.getElementById(`node${i}`);
+                    if (node) {
+                        node.classList.remove('current');
+                        if (i === parseInt(userData.progressStep)) node.classList.add('current');
+                    }
+                }
+
+                if (userData.reportText && userData.reportText.trim() !== "") {
+                    document.getElementById('applicantReportBlock').style.display = 'block';
+                    document.getElementById('txtReportView').innerText = userData.reportText;
+                } else {
+                    document.getElementById('applicantReportBlock').style.display = 'none';
+                }
+
+                // 强制多语言回刷一次
+                executeLanguageSwitch(currentSystemLanguage);
+                
+                currentWizardTab = 1;
+                switchWizardTab(1);
+            });
+        }
+
+        // 核心动态表格多语言多维渲染重构
+        function buildDynamicFormTables() {
+            // 1. 15项SOP规章
+            const sopBody = document.getElementById('sopTableBody');
+            sopBody.innerHTML = '';
+            sopsDataList.forEach((name, idx) => {
+                let showName = name;
+                if(currentSystemLanguage === 'zh-TW') showName = sopsLangDict['zh-TW'][idx];
+                else if(currentSystemLanguage === 'en') showName = sopsLangDict['en'][idx];
+
+                sopBody.innerHTML += `
+                    <tr>
+                        <td><strong>${showName}</strong></td>
+                        <td><input type="text" class="form-control ds-input" data-key="sop_${idx}_doc"></td>
+                        <td>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="radio" name="sop_${idx}_status" value="已执行" class="ds-radio"> ${currentSystemLanguage==='en'?'Pass':'已执行'}</label>
+                                <label class="choice-lbl"><input type="radio" name="sop_${idx}_status" value="筹备中" class="ds-radio"> ${currentSystemLanguage==='en'?'Preparing':'筹备中'}</label>
+                                <label class="choice-lbl"><input type="radio" name="sop_${idx}_status" value="无/不适用" class="ds-radio"> ${currentSystemLanguage==='en'?'N/A':'无'}</label>
+                            </div>
+                        </td>
+                        <td><input type="text" class="form-control ds-input" data-key="sop_${idx}_owner"></td>
+                    </tr>
+                `;
+            });
+
+            // 2. 9类核心医疗服务
+            const srvBody = document.getElementById('srvItemTableBody');
+            srvBody.innerHTML = '';
+            srvItemsList.forEach((name, idx) => {
+                let showName = name;
+                if(currentSystemLanguage === 'zh-TW') showName = srvLangDict['zh-TW'][idx];
+                else if(currentSystemLanguage === 'en') showName = srvLangDict['en'][idx];
+
+                srvBody.innerHTML += `
+                    <tr>
+                        <td><strong>${showName}</strong></td>
+                        <td>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="radio" name="srv_${idx}_type" value="直接提供" class="ds-radio"> ${currentSystemLanguage==='en'?'Direct':'直接提供'}</label>
+                                <label class="choice-lbl"><input type="radio" name="srv_${idx}_type" value="转介协作" class="ds-radio"> ${currentSystemLanguage==='en'?'Referral':'与外部协作'}</label>
+                            </div>
+                        </td>
+                        <td><input type="text" class="form-control ds-input" data-key="srv_${idx}_owner" placeholder="${currentSystemLanguage==='en'?'Department head or partner name':'业务负责人或合作外部机构全称'}"></td>
+                    </tr>
+                `;
+            });
+
+            // 3. 10行本地配置
+            const localBody = document.getElementById('localReferralTableBody');
+            localBody.innerHTML = '';
+            for(let i=1; i<=10; i++) {
+                localBody.innerHTML += `
+                    <tr>
+                        <td style="text-align:center;">${i}</td>
+                        <td><input type="text" class="form-control ds-input" data-key="local_ref_${i}_name"></td>
+                        <td><input type="text" class="form-control ds-input" data-key="local_ref_${i}_type"></td>
+                        <td><input type="text" class="form-control ds-input" data-key="local_ref_${i}_reason"></td>
+                    </tr>
+                `;
+            }
+
+            // 4. 5行跨境
+            const crossBody = document.getElementById('crossBorderTableBody');
+            crossBody.innerHTML = '';
+            for(let i=1; i<=5; i++) {
+                crossBody.innerHTML += `
+                    <tr>
+                        <td style="text-align:center;">${i}</td>
+                        <td><input type="text" class="form-control ds-input" data-key="cross_ref_${i}_name"></td>
+                        <td>
+                            <div class="choice-group">
+                                <label class="choice-lbl"><input type="radio" name="cross_ref_${i}_loc" value="内地" class="ds-radio"> ${currentSystemLanguage==='en'?'Mainland':'内地'}</label>
+                                <label class="choice-lbl"><input type="radio" name="cross_ref_${i}_loc" value="香港" class="ds-radio"> HK</label>
+                                <label class="choice-lbl"><input type="radio" name="cross_ref_${i}_loc" value="澳门" class="ds-radio"> Macau</label>
+                            </div>
+                        </td>
+                        <td><input type="text" class="form-control ds-input" data-key="cross_ref_${i}_type"></td>
+                        <td><input type="text" class="form-control ds-input" data-key="cross_ref_${i}_content"></td>
+                    </tr>
+                `;
+            }
+
+            // 5. 患者自评
+            const safetyBody = document.getElementById('safetySelfTableBody');
+            safetyBody.innerHTML = '';
+            safetySelfList.forEach((item, idx) => {
+                let showName = item.name;
+                if(currentSystemLanguage === 'zh-TW') showName = safeLangDict['zh-TW'][idx];
+                else if(currentSystemLanguage === 'en') showName = safeLangDict['en'][idx];
+
+                let inputHtml = `
+                    <div class="choice-group">
+                        <label class="choice-lbl"><input type="radio" name="safe_${item.id}_bool" value="是" class="ds-radio"> ${currentSystemLanguage==='en'?'Yes':'是'}</label>
+                        <label class="choice-lbl"><input type="radio" name="safe_${item.id}_bool" value="否" class="ds-radio"> ${currentSystemLanguage==='en'?'No':'否'}</label>
+                        ${item.opt ? `<label class="choice-lbl"><input type="radio" name="safe_${item.id}_bool" value="不适用" class="ds-radio"> N/A</label>` : ''}
+                    </div>
+                `;
+                if(item.type === 'text') {
+                    inputHtml += `<input type="text" class="form-control ds-input" style="margin-top:5px;" data-key="safe_${item.id}_txt">`;
+                }
+                safetyBody.innerHTML += `
+                    <tr><td><strong>${showName}</strong></td><td>${item.req}</td><td>${inputHtml}</td></tr>
+                `;
+            });
+
+            // 6. 11项佐证文件
+            const docBody = document.getElementById('docChecklistTableBody');
+            docBody.innerHTML = '';
+            filesList.forEach(item => {
+                docBody.innerHTML += `
+                    <tr>
+                        <td style="text-align:center;">${item.id}</td>
+                        <td><strong>[${item.type==='req'?(currentSystemLanguage==='en'?'Req':'必要项'):(currentSystemLanguage==='en'?'Opt':'可选项')}]</strong> ${item.name}</td>
+                        <td style="text-align:center;"><input type="checkbox" name="file_check_${item.id}" value="已提供" class="ds-checkbox">${currentSystemLanguage==='en'?'Checked':'已提供'}</td>
+                        <td><input type="text" class="form-control ds-input" data-key="file_sim_name_${item.id}"></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // 表单字段归集封装
+        function extractUIFormToObj() {
+            const obj = {};
+            document.querySelectorAll('.ds-input').forEach(el => {
+                obj[el.getAttribute('data-key')] = el.value;
+            });
+            const fixedIds = [
+                'f_org_name_en', 'f_social_code', 'f_license_reg_num', 'f_address', 'f_area', 'f_phone', 
+                'f_pop_served', 'f_website', 'f_legal_name', 'f_legal_phone', 'f_open_date', 'f_work_hours',
+                'f_auditor_cn', 'f_auditor_en', 'f_auditor_title', 'f_auditor_phone', 'f_auditor_email', 'f_auditor_duty',
+                'f_sub_lic_num', 'f_sub_lic_sub', 'f_sub_lic_auth', 'f_sub_lic_expiry',
+                'f_dr_total', 'f_dr_nl', 'f_dr_hk', 'f_dr_mo', 'f_dr_exp',
+                'f_ns_total', 'f_ns_nl', 'f_ns_hk', 'f_ns_mo', 'f_ns_exp',
+                'f_aux_1', 'f_aux_2', 'f_aux_3', 'f_aux_4', 'f_aux_5', 'f_aux_6', 'f_aux_7', 'f_aux_8', 'f_aux_9',
+                'f_lang_dr', 'f_lang_ns', 'f_lang_front', 'f_cpd_count', 'f_cpd_intl', 'f_cpd_psy_txt',
+                'f_comp_num', 'f_comp_rate', 'f_eval1_count', 'f_eval1_rep', 'f_eval1_method',
+                'f_eval2_count', 'f_eval2_rep', 'f_eval2_method', 'f_file1', 'f_file2', 'f_file3',
+                'f_complaint_val', 'f_resolved_val', 'f_case1_p', 'f_case1_m', 'f_case1_a', 'f_case1_v', 'f_case1_r', 'f_case1_o',
+                'f_case2_p', 'f_case2_m', 'f_case2_a', 'f_case2_v', 'f_case2_r', 'f_case2_o',
+                'f_expect_audit_date', 'f_formal_signature', 'f_formal_date'
+            ];
+            fixedIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) obj[id] = el.value;
+            });
+
+            for(let i=1; i<=5; i++){
+                obj[`f_owner_name_${i}`] = document.getElementById(`f_owner_name_${i}`).value;
+                obj[`f_owner_duty_${i}`] = document.getElementById(`f_owner_duty_${i}`).value;
+            }
+
+            document.querySelectorAll('.ds-radio:checked').forEach(el => { obj[el.name] = el.value; });
+            const radioNames = ['f_org_type', 'f_has_intl_cert', 'f_cpd_plan', 'f_cpd_psy', 'f_cpd_eval', 'f_net_hospital', 'f_net_time', 'f_cross_border', 'f_case1_src', 'f_case2_src'];
+            radioNames.forEach(name => {
+                const checkedEl = document.querySelector(`input[name="${name}"]:checked`);
+                if(checkedEl) obj[name] = checkedEl.value;
+            });
+
+            document.querySelectorAll('.ds-checkbox:checked').forEach(el => { obj[el.name] = el.value; });
+            const checkboxNames = ['f_lang_type', 'f_pay_sys', 'f_comp_chan', 'f_net_plat', 'f_feedback', 'f_pay'];
+            checkboxNames.forEach(name => {
+                const checkedArr = [];
+                document.querySelectorAll(`input[name="${name}"]:checked`).forEach(el => checkedArr.push(el.value));
+                obj[name] = checkedArr;
+            });
+
+            obj['formal_check_commit'] = document.getElementById('f_formal_check_commit').checked;
+
+            const zonesData = [];
+            const trs = document.querySelectorAll('#functionalZoneBody tr');
+            trs.forEach((tr) => {
+                const inputs = tr.querySelectorAll('input');
+                if(inputs.length === 3) {
+                    zonesData.push({ qty: inputs[0].value, size: inputs[1].value, use: inputs[2].value });
+                } else if(inputs.length === 4) {
+                    zonesData.push({ label: inputs[0].value, qty: inputs[1].value, size: inputs[2].value, use: inputs[3].value });
+                } else if(inputs.length === 1) {
+                    obj['f_zone_ex_remark'] = inputs[0].value;
+                }
+            });
+            obj['f_zones_matrix'] = zonesData;
+
+            return obj;
+        }
+
+        function fillGlobalFormDataToUI(obj) {
+            if(!obj) return;
+            document.querySelectorAll('.ds-input').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (obj[key] !== undefined) el.value = obj[key];
+            });
+
+            Object.keys(obj).forEach(key => {
+                const el = document.getElementById(key);
+                if(el && el.type !== 'checkbox' && el.type !== 'radio') el.value = obj[key];
+            });
+
+            for(let i=1; i<=5; i++){
+                if(obj[`f_owner_name_${i}`]) document.getElementById(`f_owner_name_${i}`).value = obj[`f_owner_name_${i}`];
+                if(obj[`f_owner_duty_${i}`]) document.getElementById(`f_owner_duty_${i}`).value = obj[`f_owner_duty_${i}`];
+            }
+
+            Object.keys(obj).forEach(key => {
+                if(typeof obj[key] === 'string') {
+                    const radio = document.querySelector(`input[name="${key}"][value="${obj[key]}"]`);
+                    if(radio) radio.checked = true;
+                }
+            });
+
+            Object.keys(obj).forEach(key => {
+                if(Array.isArray(obj[key])) {
+                    document.querySelectorAll(`input[name="${key}"]`).forEach(cb => {
+                        if(obj[key].includes(cb.value)) cb.checked = true;
+                    });
+                } else {
+                    const cb = document.querySelector(`input[name="${key}"]`);
+                    if(cb && obj[key] === '已提供') cb.checked = true;
+                }
+            });
+
+            document.getElementById('f_formal_check_commit').checked = obj['formal_check_commit'] || false;
+
+            if(obj['f_zones_matrix'] && Array.isArray(obj['f_zones_matrix'])) {
+                const trs = document.querySelectorAll('#functionalZoneBody tr');
+                let matrixIndex = 0;
+                trs.forEach((tr) => {
+                    const inputs = tr.querySelectorAll('input');
+                    const mData = obj['f_zones_matrix'][matrixIndex];
+                    if(mData) {
+                        if(inputs.length === 3) {
+                            inputs[0].value = mData.qty || ''; inputs[1].value = mData.size || ''; inputs[2].value = mData.use || ''; matrixIndex++;
+                        } else if(inputs.length === 4) {
+                            inputs[0].value = mData.label || ''; inputs[1].value = mData.qty || ''; inputs[2].value = mData.size || ''; inputs[3].value = mData.use || ''; matrixIndex++;
+                        }
+                    }
+                });
+            }
+            if(obj['f_zone_ex_remark']) document.querySelector('#functionalZoneBody tr input[placeholder*="缺陷"]').value = obj['f_zone_ex_remark'];
+        }
+
+        /* ================= 认证管理后台控制舱处理 ================= */
+        function loadSecretariatDashboard() {
+            const container = document.getElementById('adminOrgListContainer');
+            container.innerHTML = '';
+
+            if(!dbInstance) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">正在唤醒数据库中...</p>'; return;
+            }
+
+            const transaction = dbInstance.transaction(["institutions"], "readonly");
+            const objectStore = transaction.objectStore("institutions");
+            const cursorRequest = objectStore.openCursor();
+            let hasRecords = false;
+
+            cursorRequest.onsuccess = function(event) {
+                const cursor = event.target.result;
+                if (cursor) {
+                    hasRecords = true;
+                    const uData = cursor.value;
+                    const item = document.createElement('div');
+                    item.style.padding = '10px';
+                    item.style.border = '1px solid var(--border-color)';
+                    item.style.backgroundColor = '#fff';
+                    item.style.marginBottom = '8px';
+                    item.style.borderRadius = '4px';
+                    item.style.cursor = 'pointer';
+                    item.style.fontSize = '0.88rem';
+                    item.innerHTML = `<strong>${uData.orgName}</strong><br><span style="color:var(--text-muted); font-size:0.8rem;">生命周期：[ 步骤 ${uData.progressStep} ] | 状态：${uData.formSubmitted?'正式锁定提交':'草稿暂存'}</span>`;
+                    
+                    const currentKey = uData.account;
+                    item.onclick = function() { adminSelectTargetOrg(currentKey); };
+                    container.appendChild(item);
+                    cursor.continue();
+                } else if(!hasRecords) {
+                    container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">暂无申请数据。</p>';
+                }
+            };
+        }
+
+        function renderHighFidelityReviewHtml(data, orgName) {
+            let html = `
+                <div class="review-block-title">第（一）部分：机构基本信息</div>
+                <div class="review-text-item"><strong>医疗机构全称（中文）：</strong>${orgName || ''}</div>
+                <div class="review-text-item"><strong>医疗机构全称（英文）：</strong>${data.f_org_name_en || ''}</div>
+                <div class="review-text-item"><strong>统一社会信用代码 / 商业登记证编号：</strong>${data.f_social_code || ''}</div>
+                <div class="review-text-item"><strong>医疗执业许可证登记号：</strong>${data.f_license_reg_num || ''}</div>
+                <div class="review-text-item"><strong>机构类型：</strong>${data.f_org_type || ''}</div>
+                <div class="review-text-item"><strong>机构地址：</strong>${data.f_address || ''}</div>
+                <div class="review-text-item"><strong>总占地面积（平方米）：</strong>${data.f_area || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>机构联系电话：</strong>${data.f_phone || ''}</div>
+                <div class="review-text-item"><strong>服务常驻人口数（人）：</strong>${data.f_pop_served || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>机构官网：</strong>${data.f_website || ''}</div>
+                <div class="review-text-item"><strong>机构法人/负责人姓名：</strong>${data.f_legal_name || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>负责人联系电话：</strong>${data.f_legal_phone || ''}</div>
+                <div class="review-text-item"><strong>机构开业日期：</strong>${data.f_open_date || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>开放时间：</strong>${data.f_work_hours || ''}</div>
+
+                <div class="review-block-title">第（二）部分：内审员信息</div>
+                <div class="review-text-item"><strong>内审员姓名（中文）：</strong>${data.f_auditor_cn || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>内审员姓名（英文）：</strong>${data.f_auditor_en || ''}</div>
+                <div class="review-text-item"><strong>机构内职务：</strong>${data.f_auditor_title || ''} &nbsp;&nbsp;&nbsp;&nbsp; <strong>联系电话：</strong>${data.f_auditor_phone || ''}</div>
+                <div class="review-text-item"><strong>主要职责简述：</strong>${data.f_auditor_duty || ''}</div>
+
+                <div class="review-block-title">第（三）部分：详细信息申报</div>
+                <table class="form-table" style="font-size:0.82rem;">
+                    <thead><tr><th>岗位名称</th><th>姓名</th><th>主要职责说明</th></tr></thead>
+                    <tbody>
+                        <tr><td>法定代表人 / 董事</td><td>${data.f_owner_name_1 || ''}</td><td>${data.f_owner_duty_1 || ''}</td></tr>
+                        <tr><td>医疗主管</td><td>${data.f_owner_name_2 || ''}</td><td>${data.f_owner_duty_2 || ''}</td></tr>
+                        <tr><td>护理主管</td><td>${data.f_owner_name_3 || ''}</td><td>${data.f_owner_duty_3 || ''}</td></tr>
+                    </tbody>
+                </table>
+            `;
+            return html;
+        }
+
+        function adminSelectTargetOrg(userKey) {
+            adminSelectedUserKey = userKey;
+            getInstitutionFromDB(userKey, function(uData) {
+                if(!uData) return;
+                document.getElementById('auditTargetName').innerText = `🏢 正在进行全量穿透评审：${uData.orgName}`;
+                document.getElementById('auditContentBody').style.display = 'block';
+                document.getElementById('optProgressStep').value = uData.progressStep;
+                
+                const htmlCanvas = renderHighFidelityReviewHtml(uData.formData || {}, uData.orgName);
+                document.getElementById('adminReviewCanvasContainer').innerHTML = htmlCanvas;
+                document.getElementById('txtAdminReportArea').value = uData.reportText || '';
+            });
+        }
+
+        function adminExecuteUpdateStep() {
+            if(!adminSelectedUserKey) return;
+            const step = document.getElementById('optProgressStep').value;
+            getInstitutionFromDB(adminSelectedUserKey, function(uData) {
+                if(!uData) return;
+                uData.progressStep = parseInt(step);
+                saveInstitutionToDB(uData, function() {
+                    alert(`⚙ 指令同步成功：步骤已变更为：[ 步骤 ${step} ]。`);
+                    loadSecretariatDashboard();
+                });
+            });
+        }
+
+        function adminSaveReviewOnly() {
+            if(!adminSelectedUserKey) return;
+            const rep = document.getElementById('txtAdminReportArea').value;
+            getInstitutionFromDB(adminSelectedUserKey, function(uData) {
+                if(!uData) return;
+                uData.reportText = rep;
+                saveInstitutionToDB(uData, function() { alert('💾 评审工作意见已成功暂存。'); });
+            });
+        }
+
+        function adminSubmitToNextStep() {
+            if(!adminSelectedUserKey) return;
+            const rep = document.getElementById('txtAdminReportArea').value;
+            getInstitutionFromDB(adminSelectedUserKey, function(uData) {
+                if(!uData) return;
+                uData.reportText = rep;
+                if(uData.progressStep < 7) uData.progressStep += 1;
+                saveInstitutionToDB(uData, function() {
+                    alert(`🚀 流程已自动推演至下一步骤：[ 步骤 ${uData.progressStep} ]！`);
+                    loadSecretariatDashboard();
+                    adminSelectTargetOrg(adminSelectedUserKey); 
+                });
+            });
+        }
+
+        // 绑定首次默认简体中文回显
+        window.addEventListener('load', function() {
+            executeLanguageSwitch('zh-CN');
+            const toggleBtn = document.getElementById('sys-menu-toggle');
+            const zone = document.getElementById('headerRightZone');
+            if(toggleBtn && zone) {
+                toggleBtn.addEventListener('click', function() {
+                    toggleBtn.classList.toggle('active');
+                    zone.classList.toggle('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
